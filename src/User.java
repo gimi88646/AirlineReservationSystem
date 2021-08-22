@@ -62,7 +62,17 @@ public class User extends Person {
         //
         //statement.execute();
         // this method returns a resultSet:  bookings made only by a username and are greater or equals to today
-        statement.execute("SELECT * FROM Bookings WHERE bookedBy = '"+username+"' bookedForDate>= date('now')");
+
+//        SELECT BOOKINGS.*, Flights.travelTo, Flights.travelFrom
+//        FROM BOOKINGS
+//        INNER JOIN Flights ON BOOKINGS.flightId= Flights.flightId
+//        WHERE BOOKINGS.bookedBy ='gimi88646'
+//        ORDER BY bookedForDate;
+
+        statement.execute("SELECT Bookings.*,Flights.travelTo,Flights.travelFrom,Flights.takeOffTime FROM Bookings " +
+                "INNER JOIN Flights ON Bookings.flightId=Flights.flightId " +
+                "WHERE Bookings.bookedBy = '"+username+"' AND bookedForDate>= date('now') " +
+                "ORDER BY bookedForDate");
         return statement.getResultSet();
 //        SELECT * FROM BOOKINGS WHERE bookedBy='gimi88646' and bookedForDate>= date('now')
     }
@@ -71,7 +81,7 @@ public class User extends Person {
 //        then that information is passed as parameter in this method and SQL gets in action .. not sure whether is should delete the booking or change the status to cancelled
 //        this method first calls getBookigs and and results get displayed by the driver class
     }
-    public ResultSet viewHistory() throws SQLException{
+    public ResultSet getHistory() throws SQLException{
         statement.execute("SELECT * FROM Bookings WHERE bookedBy = '"+username+"' bookedForDate<date('now')");
         return statement.getResultSet();
     }

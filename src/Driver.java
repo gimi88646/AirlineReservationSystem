@@ -40,7 +40,6 @@ public class Driver {
                             "5. Log out\n" +
                             "6. Exit\n" +
                             "Please choose any of the above: "
-
                     );
                     choice = input.nextInt();
                     if (choice > 6 || choice < 1)
@@ -68,7 +67,6 @@ public class Driver {
                                 }else {
                                     airline.user.book(passengers,bookingInfo);
                                 }
-
                             }
                             //book ka method from user class
                         }
@@ -80,13 +78,15 @@ public class Driver {
                             // there should be query that compares the dates in sql with the current time and returns resultSet
                             // containing elements greater than or equals to the date of the system
                             ResultSet bookings = airline.user.getBookings();
-                            displayBookings(bookings);
+                            displayBookings(bookings,false);
                             break;
                         }
                         case 3: {
                             // Cancel Booking
                             // this method should be implemented in user class, in user gets to to choose among his bookings and cancel that booking
                             // airline.user.cancelBooking() gets invoked
+                            String bookingId = displayBookings(airline.user.getBookings(),true);
+                            System.out.println("BookingId = "+bookingId);
                             break;
                         }
                         case 4: {
@@ -94,6 +94,7 @@ public class Driver {
                             // the method should be in user class class.. and calling of method should be like airline.user.viewHistory
                             // the user gets to see the bookings...bookedBy "username" and date<now
                             // airline.user.viewHistory()
+                            displayBookings(airline.user.getHistory(),false);
                             break;
                         }
                         case 5: {
@@ -226,12 +227,64 @@ public class Driver {
         } while (true);
     }
 
-    public  static void displayBookings(ResultSet resultSet) throws SQLException{
+    public  static String displayBookings(ResultSet resultSet,boolean wantsToCancelBooking) throws SQLException{
         // this method can print bookings that are history, as well as bookings that are not yet past
-        // display boookingId .. bookedOndate bookedFordate cnic fullname seatType
-        while (resultSet.next()){
+        // display boookingId .. bookedOndate bookedFordate cnic fullname seatType ...to From and time
 
+        while(true){
+            System.out.println(
+                    String.format("%-4s","")+
+                            String.format("%-20s","Flight ID")+
+                            String.format("%-20s","From")+
+                            String.format("%-20s","To")+
+                            String.format("%-20s","Name")+
+                            String.format("%-20s","CNIC")+
+                            String.format("%-20s","Class")+
+                            String.format("%-20s","Departure Time")+
+                            String.format("%-20s","Departure Date")+
+                            String.format("%-20s","Booking Date")+'\n'+
+                            "_".repeat(184)+'\n'
+            );
+            int count=1;
+            ArrayList<String> bookingIds = new ArrayList<>();
+            while (resultSet.next()){
+                bookingIds.add(resultSet.getString("bookingId"));
+                System.out.println(
+                                String.format("%-4s",count+".")+
+                                String.format("%-20s",resultSet.getString("flightId"))+
+                                String.format("%-20s",resultSet.getString("travelFrom"))+
+                                String.format("%-20s",resultSet.getString("travelTo"))+
+                                String.format("%-20s",resultSet.getString("fullName"))+
+                                String.format("%-20s",resultSet.getString("cnic"))+
+                                String.format("%-20s",resultSet.getString("seatType"))+
+                                String.format("%-20s",resultSet.getString("takeOffTime"))+
+                                String.format("%-20s",resultSet.getString("bookedForDate"))+
+                                String.format("%-20s",resultSet.getString("bookedOnDate"))
+                );
+                count++;
+            }
+            System.out.println();
+
+            if(wantsToCancelBooking){
+                System.out.println(String.format("%-4s",count+".")+"Go Back");
+                System.out.print("Choose a booking that you want to cancel: ");
+                try{
+                    int choice = input.nextInt();
+                    if(choice>count|| choice<1) throw  new InputOutOfBound("Select From 1 to "+count);
+                    if(choice==count){return "goBack";}
+                    else return bookingIds.get(choice-1);
+                }catch (InputMismatchException inputMismatchException){
+                    System.out.println("Please Input Integers Only!");
+                    input.nextLine();
+                    continue;
+                }catch (InputOutOfBound inputOutOfBound){
+                    System.out.println(inputOutOfBound);
+                    continue;
+                }
+            }
+            return "";
         }
+
     }
 
     public static String getStrDate(Date date){
@@ -239,6 +292,7 @@ public class Driver {
         String strDate = dateFormat.format(date);  // 2021-12-12
         return strDate;
     }
+
 
     private static String inputName(){
 
@@ -361,8 +415,6 @@ public class Driver {
 
                 System.out.print("Enter Date of Departure (Date format: yyyy-MM-dd): ");
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(input.next());
-
-
                 //i have to show to-froms separately if the user has already selected a from .. i should exclude that origin from the options
 //                ArrayList<String> origins = airline.getOperations(date,origin);
                 ArrayList<String> froms = airline.getFroms(date);

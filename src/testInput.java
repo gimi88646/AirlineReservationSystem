@@ -7,6 +7,17 @@ import java.util.Scanner;
 
 public class testInput {
     public static void main(String[] args) {
+//        System.out.print();
+        System.out.println("hekko");
+        String A=  String.format("%-20s", 93); // prints: |93                  |
+        String B=  String.format("%-16s", 94); // prints: |93                  |
+        String C=  String.format("%-16s", 95); // prints: |93                  |
+        System.out.print(A);
+        System.out.print(B);
+        System.out.println(C);
+//        System.out.println("Flight ID\t\tFrom\t\tTo\t\tDeparture Time\t\tfullName\t\tCNIC\t\tClass");
+        System.out.println("Flight ID\t\tFrom\t\tTo\t\tName\t\tCNIC\t\tClass\t\tDeparture Time\t\tDeparture Date\t\tBooking Date");
+
         String name = "ghulam muhammad";
         String capitalized="";
         boolean convertNext = true;
