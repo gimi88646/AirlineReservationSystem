@@ -1,0 +1,22 @@
+ ArrayList getOperations(Date date,String origin) throws SQLException{
+          ArrayList<String> operations = new ArrayList();
+
+          statement.execute("SELECT DISTINCT travelFrom FROM FLights WHERE travelFrom='"+origin+"';");
+          ResultSet resultSet = statement.getResultSet();
+          while (resultSet.next()) {
+               operations.add(resultSet.getString("travelTo"));
+          }
+          return operations;
+     }
+ArrayList<String[]> getOperations(Date date) throws SQLException{
+          ArrayList<String[]> toFroms = new ArrayList<>();
+          statement.execute("SELECT DISTINCT travelFrom,travelTo FROM FLights");
+          ResultSet resultSet = statement.getResultSet();
+          while(resultSet.next()){
+               String[] toFrom = new String[2];
+               toFrom[0] = resultSet.getString("travelFrom");
+               toFrom[1] = resultSet.getString("travelTo");
+               toFroms.add(toFrom);
+          }
+          return toFroms;
+     }
