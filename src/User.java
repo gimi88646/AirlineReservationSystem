@@ -37,6 +37,7 @@ public class User extends Person {
 
         // //this method is to insert data into bookings table..  after data insertion the operation is complete
 
+<<<<<<< HEAD
         // // arraylist banani he order ke hisab se ..
         // // phr wo info insert query laga kr database me save krni he .. khatam kahani....
         // passengers.forEach((passenger)->{
@@ -55,6 +56,26 @@ public class User extends Person {
         //         throwables.printStackTrace();
         //     }
         // });
+=======
+        // arraylist banani he order ke hisab se ..
+        // phr wo info insert query laga kr database me save krni he .. khatam kahani....
+        passengers.forEach((passenger)->{
+            try {
+                statement.execute("INSERT INTO " +
+                        "Bookings(flightId,bookedOnDate,bookedForDate,bookedBy,fullName,cnic,seatType) VALUES(" +
+                        flightId +","+
+                        "date('now'),"+
+                        "'"+date+"',"+
+                        "'"+username+"',"+
+                        "'"+passenger[0]+"',"+
+                        "'"+passenger[1]+"',"+
+                        "'"+seatType+
+                        "')");
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        });
+>>>>>>> master
 
         String dateofbooking = (String) bookingInfo.get(0);
         char seattype = (char) bookingInfo.get(2);
@@ -90,14 +111,32 @@ public class User extends Person {
         // aaj ki date se
         // ye method return karega resultset.. jisko process karega driver
         //
+<<<<<<< HEAD
         // statement.execute();
         // this method returns a resultSet: bookings made only by a username and are
         // greater or equals to today
         statement.execute("SELECT * FROM Bookings WHERE bookedBy = '" + username + "' bookedForDate>= date('now')");
+=======
+        //statement.execute();
+        // this method returns a resultSet:  bookings made only by a username and are greater or equals to today
+
+//        SELECT BOOKINGS.*, Flights.travelTo, Flights.travelFrom
+//        FROM BOOKINGS
+//        INNER JOIN Flights ON BOOKINGS.flightId= Flights.flightId
+//        WHERE BOOKINGS.bookedBy ='gimi88646'
+//        ORDER BY bookedForDate;
+
+
+        statement.execute("SELECT Bookings.*,Flights.travelTo,Flights.travelFrom,Flights.takeOffTime FROM Bookings " +
+                "INNER JOIN Flights ON Bookings.flightId=Flights.flightId " +
+                "WHERE Bookings.bookedBy = '"+username+"' AND bookedForDate>= date('now') " +
+                "ORDER BY bookedForDate");
+>>>>>>> master
         return statement.getResultSet();
         // SELECT * FROM BOOKINGS WHERE bookedBy='gimi88646' and bookedForDate>=
         // date('now')
     }
+<<<<<<< HEAD
 
     public void cancelBooking(int bookingId) {
         // for this module getBookings will be called first in Driver then the user is
@@ -111,6 +150,20 @@ public class User extends Person {
 
     public ResultSet viewHistory() throws SQLException {
         statement.execute("SELECT * FROM Bookings WHERE bookedBy = '" + username + "' bookedForDate<date('now')");
+=======
+    public void cancelBooking(String bookingId) throws SQLException{
+//        for this module getBookings will be called first in Driver then the user is asked to input the booking he wants to cancel
+//        then that information is passed as parameter in this method and SQL gets in action .. not sure whether is should delete the booking or change the status to cancelled
+//        this method first calls getBookigs and and results get displayed by the driver class
+        statement.execute("DELETE FROM Bookings WHERE BookingId="+bookingId+";");
+    }
+    public ResultSet getHistory() throws SQLException{
+//        statement.execute("SELECT * FROM Bookings WHERE bookedBy = '"+username+"' AND bookedForDate<date('now')");
+        statement.execute("SELECT Bookings.*,Flights.travelTo,Flights.travelFrom,Flights.takeOffTime FROM Bookings " +
+                "INNER JOIN Flights ON Bookings.flightId=Flights.flightId " +
+                "WHERE Bookings.bookedBy = '"+username+"' AND bookedForDate<date('now') " +
+                "ORDER BY bookedForDate");
+>>>>>>> master
         return statement.getResultSet();
     }
 }
