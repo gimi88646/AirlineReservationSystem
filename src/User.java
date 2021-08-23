@@ -44,12 +44,12 @@ public class User extends Person {
                         "Bookings(flightId,bookedOnDate,bookedForDate,bookedBy,fullName,cnic,seatType) VALUES(" +
                         flightId +","+
                         "date('now'),"+
-                        date+","+
-                        username+","+
-                        passenger[0]+","+
-                        passenger[1]+","+
-                        seatType+","+
-                        ")");
+                        "'"+date+"',"+
+                        "'"+username+"',"+
+                        "'"+passenger[0]+"',"+
+                        "'"+passenger[1]+"',"+
+                        "'"+seatType+
+                        "')");
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -69,6 +69,7 @@ public class User extends Person {
 //        WHERE BOOKINGS.bookedBy ='gimi88646'
 //        ORDER BY bookedForDate;
 
+
         statement.execute("SELECT Bookings.*,Flights.travelTo,Flights.travelFrom,Flights.takeOffTime FROM Bookings " +
                 "INNER JOIN Flights ON Bookings.flightId=Flights.flightId " +
                 "WHERE Bookings.bookedBy = '"+username+"' AND bookedForDate>= date('now') " +
@@ -76,13 +77,18 @@ public class User extends Person {
         return statement.getResultSet();
 //        SELECT * FROM BOOKINGS WHERE bookedBy='gimi88646' and bookedForDate>= date('now')
     }
-    public void cancelBooking(int bookingId){
+    public void cancelBooking(String bookingId) throws SQLException{
 //        for this module getBookings will be called first in Driver then the user is asked to input the booking he wants to cancel
 //        then that information is passed as parameter in this method and SQL gets in action .. not sure whether is should delete the booking or change the status to cancelled
 //        this method first calls getBookigs and and results get displayed by the driver class
+        statement.execute("DELETE FROM Bookings WHERE BookingId="+bookingId+";");
     }
     public ResultSet getHistory() throws SQLException{
-        statement.execute("SELECT * FROM Bookings WHERE bookedBy = '"+username+"' bookedForDate<date('now')");
+//        statement.execute("SELECT * FROM Bookings WHERE bookedBy = '"+username+"' AND bookedForDate<date('now')");
+        statement.execute("SELECT Bookings.*,Flights.travelTo,Flights.travelFrom,Flights.takeOffTime FROM Bookings " +
+                "INNER JOIN Flights ON Bookings.flightId=Flights.flightId " +
+                "WHERE Bookings.bookedBy = '"+username+"' AND bookedForDate<date('now') " +
+                "ORDER BY bookedForDate");
         return statement.getResultSet();
     }
 }
