@@ -1,12 +1,34 @@
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class testInput {
+    static Scanner input = new Scanner(System.in);
     public static void main(String[] args) {
+        System.out.println("You do not have any active Bookings!".length());
+
+        String cnic = inputCnic();
+        System.out.println(cnic);
+        String Name = inputName();
+        System.out.println("name input by functon  = "+Name);
+        Pattern pattern = Pattern.compile(new String ("^[a-zA-Z]+[\\-'\\s]?[a-zA-Z ]+$"));
+        String name;
+        while(true){
+            try {
+                System.out.print("Full Name: ");
+                name = input.nextLine();
+                Matcher matcher = pattern.matcher(name);
+                if(!matcher.matches()) throw new InputMismatchException();
+                break;
+
+            }
+            catch (InputMismatchException e){
+                System.out.println("Please enter a valid name!");
+                input.nextLine();
+            }
+        }
 //        System.out.print();
         System.out.println("hekko");
         String A=  String.format("%-20s", 93); // prints: |93                  |
@@ -18,7 +40,7 @@ public class testInput {
 //        System.out.println("Flight ID\t\tFrom\t\tTo\t\tDeparture Time\t\tfullName\t\tCNIC\t\tClass");
         System.out.println("Flight ID\t\tFrom\t\tTo\t\tName\t\tCNIC\t\tClass\t\tDeparture Time\t\tDeparture Date\t\tBooking Date");
 
-        String name = "ghulam muhammad";
+//        String name = "ghulam muhammad";
         String capitalized="";
         boolean convertNext = true;
         for (char ch : name.toCharArray()) {
@@ -73,4 +95,60 @@ public class testInput {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String strDate = dateFormat.format(date);
           }
+
+    private static String inputName(){
+
+        Pattern pattern = Pattern.compile(new String ("^[a-zA-Z]+[\\-'\\s]?[a-zA-Z ]+$"));
+        String name;
+        while(true){
+            try {
+                System.out.print("Full Name: ");
+                name = input.nextLine();
+                Matcher matcher = pattern.matcher(name);
+                if(!matcher.matches()) throw new InputMismatchException();
+                break;
+
+            }
+            catch (InputMismatchException e){
+                System.out.println("Please enter a valid name!");
+                input.nextLine();
+            }
+        }
+        String capitalized="";
+        boolean convertNext = true;
+        for (char ch : name.toCharArray()) {
+            if (Character.isSpaceChar(ch)) {
+                convertNext = true;
+            } else if (convertNext) {
+                ch = Character.toTitleCase(ch);
+                convertNext = false;
+            } else {
+                ch = Character.toLowerCase(ch);
+            }
+            capitalized+=ch;
+        }
+        return capitalized;
+    }
+    private static String inputCnic() {
+        String cnic;
+        while (true) {
+            try {
+                System.out.print("cnic should be separated by \"-\"\nCNIC Number: ");
+                cnic = input.next();
+                //4XXXX-XXXXXXX-X
+//                String cnicPatternStructure = "4[0-9]{4}-[0-9]{7}-[0-9]";
+//                String cnicPatternStructure = "^4\\d{4}-\\d{7}-\\d{1}$";
+                String cnicPatternStructure = "^[1-7][0-9]{4}-\\d{7}-\\d{1}$";
+                Pattern cnicPattern = Pattern.compile(cnicPatternStructure);
+                Matcher cnicPatternMatcher = cnicPattern.matcher(cnic);
+                System.out.println("CNIC MATCHES = "+ cnicPatternMatcher.matches());
+                if (!cnicPatternMatcher.matches()) throw new InputMismatchException();
+                break;
+            } catch (InputMismatchException ex) {
+                System.out.println("Please Enter a Valid CNIC number! ");
+            }
+        }
+        return cnic;
+    }
+
 }
