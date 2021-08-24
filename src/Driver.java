@@ -22,7 +22,6 @@ public class Driver {
         int choice;
         try {
             airline = new Airline();
-            airline.admin.addRoute();
         } catch (SQLException throwables) {
             System.out.println("Something really went wrong");
         }
