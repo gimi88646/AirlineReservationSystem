@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,13 +9,14 @@ import java.util.Scanner;
 import java.sql.ResultSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-//import WordUtils;
+//import java.lang.WordUtils;
 
 public class Driver {
     public static Scanner input = new Scanner(System.in);
     static Airline airline;
 
     public static void main(String[] args) {
+
         // see flights
         // login
         int choice;
@@ -40,7 +42,6 @@ public class Driver {
                             "5. Log out\n" +
                             "6. Exit\n" +
                             "Please choose any of the above: "
-
                     );
                     choice = input.nextInt();
                     if (choice > 6 || choice < 1)
@@ -67,10 +68,11 @@ public class Driver {
                                     break;
                                 }else {
                                     airline.user.book(passengers,bookingInfo);
+                                    System.out.println("Booked Successfully! ");
                                 }
-
                             }
                             //book ka method from user class
+                            break;
                         }
                         case 2: {
                             //view Bookings
@@ -80,13 +82,16 @@ public class Driver {
                             // there should be query that compares the dates in sql with the current time and returns resultSet
                             // containing elements greater than or equals to the date of the system
                             ResultSet bookings = airline.user.getBookings();
-                            displayBookings(bookings);
+                            displayBookings(bookings,false);
                             break;
                         }
                         case 3: {
                             // Cancel Booking
                             // this method should be implemented in user class, in user gets to to choose among his bookings and cancel that booking
                             // airline.user.cancelBooking() gets invoked
+                            String bookingId = displayBookings(airline.user.getBookings(),true);
+                            System.out.println("BookingId = "+bookingId);
+                            airline.user.cancelBooking(bookingId);
                             break;
                         }
                         case 4: {
@@ -94,11 +99,13 @@ public class Driver {
                             // the method should be in user class class.. and calling of method should be like airline.user.viewHistory
                             // the user gets to see the bookings...bookedBy "username" and date<now
                             // airline.user.viewHistory()
+                            System.out.println("HISTORY");
+                            displayBookings(airline.user.getHistory(),false);
                             break;
                         }
                         case 5: {
                             //logout ...airline class me
-                            airline.user = null;
+                            airline.user.logOut();
                             break;
                         }
                         case 6: {
@@ -226,12 +233,73 @@ public class Driver {
         } while (true);
     }
 
-    public  static void displayBookings(ResultSet resultSet) throws SQLException{
+    public  static String displayBookings(ResultSet resultSet,boolean wantsToCancelBooking) throws SQLException{
         // this method can print bookings that are history, as well as bookings that are not yet past
-        // display boookingId .. bookedOndate bookedFordate cnic fullname seatType
-        while (resultSet.next()){
+        // display boookingId .. bookedOndate bookedFordate cnic fullname seatType ...to From and time
 
+        while(true){
+            //headers
+            System.out.println(
+                    "_".repeat(147)+'\n'+
+                    String.format("%-4s","")+
+                            String.format("%-13s","Flight ID")+
+                            String.format("%-15s","From")+
+                            String.format("%-15s","To")+
+                            String.format("%-20s","Name")+
+                            String.format("%-19s","CNIC")+
+                            String.format("%-9s","Class")+
+                            String.format("%-18s","Departure Time")+
+                            String.format("%-18s","Departure Date")+
+                            String.format("%-16s","Booking Date")+"|\n"+
+                            "=".repeat(147)+"|\n"+
+                            String.format("%148s",'|')
+            );
+            int count=1;
+            ArrayList<String> bookingIds = new ArrayList<>();
+            while (resultSet.next()){
+
+                bookingIds.add(resultSet.getString("bookingId"));
+                //  148
+                System.out.println(
+                                String.format("%-4s",count+".")+
+                                String.format("%-13s",resultSet.getString("flightId"))+
+                                String.format("%-15s",resultSet.getString("travelFrom"))+
+                                String.format("%-15s",resultSet.getString("travelTo"))+
+                                String.format("%-20s",resultSet.getString("fullName"))+
+                                String.format("%-19s",resultSet.getString("cnic"))+
+                                String.format("%-9s",resultSet.getString("seatType"))+
+                                String.format("%-18s",resultSet.getString("takeOffTime"))+
+                                String.format("%-18s",resultSet.getString("bookedForDate"))+
+                                String.format("%-16s",resultSet.getString("bookedOnDate"))+ "|"
+                );
+                count++;
+            }
+            if(count==1){
+                System.out.println(String.format("%89s","You do not have any Bookings!")+
+                        String.format("%59s",'|'));
+            }
+            System.out.println();
+
+            if(wantsToCancelBooking){
+                System.out.println(String.format("%-4s",count+".")+"Go Back");
+                System.out.print("Choose a booking that you want to cancel: ");
+                try{
+                    int choice = input.nextInt();
+                    if(choice>count|| choice<1) throw  new InputOutOfBound("Select From 1 to "+count);
+                    if(choice==count){return "goBack";}
+                    else return bookingIds.get(choice-1);
+                }catch (InputMismatchException inputMismatchException){
+                    System.out.println("Please Input Integers Only!");
+                    input.nextLine();
+                    continue;
+                }catch (InputOutOfBound inputOutOfBound){
+                    System.out.println(inputOutOfBound);
+                    continue;
+                }
+            }
+            return "";
         }
+
     }
 
     public static String getStrDate(Date date){
@@ -247,6 +315,7 @@ public class Driver {
         while(true){
             try {
                 System.out.print("Full Name: ");
+                name = input.nextLine();
                 name = input.nextLine();
                 Matcher matcher = pattern.matcher(name);
                 if(!matcher.matches()) throw new InputMismatchException();
@@ -278,16 +347,18 @@ public class Driver {
         String cnic;
         while (true) {
             try {
-                System.out.println("cnic should be separated by \"-\"\nCNIC Number: ");
+                System.out.print("cnic should be separated by \"-\"\nCNIC Number: ");
                 cnic = input.next();
                 //4XXXX-XXXXXXX-X
-                String cnicPatternStructure = "4[0-9]{4}-[0-9]{7}-[0-9]";
+//                String cnicPatternStructure = "4[0-9]{4}-[0-9]{7}-[0-9]";
+                String cnicPatternStructure = "^[1-7][0-9]{4}-\\d{7}-\\d{1}$";
+
                 Pattern cnicPattern = Pattern.compile(cnicPatternStructure);
                 Matcher cnicPatternMatcher = cnicPattern.matcher(cnic);
                 if (!cnicPatternMatcher.matches()) throw new InputMismatchException();
                 break;
             } catch (InputMismatchException ex) {
-                System.out.print("Please Enter a Valid CNIC number! ");
+                System.out.println("Please Enter a Valid CNIC number! ");
             }
         }
         return cnic;
@@ -312,7 +383,7 @@ public class Driver {
 
     private static String showFlights(ResultSet resultSet) throws SQLException {
         boolean flightFound =false;
-        System.out.println("FlightId\t\t+ Time ");
+        System.out.println("\nAvailable Flights\n");
         //kyaa hi baat ho ke me sirf time puchoo ussy se or kahu in timings me se choose ke .. jissy wo mujhe index dega..
         ArrayList<String[]> flights = new ArrayList<>();
         while(resultSet.next()){
@@ -324,14 +395,22 @@ public class Driver {
         }
         if (flightFound){
             //sout(headers)
-            System.out.println("\tFlight ID\t\t|\tTime");
+//            System.out.println("\tFlight ID\t\t|\tTime");
+            System.out.println(String.format("%-4s","")+String.format("%-20s","Flight ID")+ String.format("%-20s","Time"));
             for(int i=0;i<flights.size();i++){
                 //sout(info) of each flight
                 String[] flight = flights.get(i);
-                System.out.println((i+1)+".\t" + flight[0]+"\t\t|"+flight[1]);
+                System.out.println(
+                        String.format("%-4s",(i+1)+".")+
+                        String.format("%-20s",flight[0])+
+                        String.format("%-20s",flight[1])
+                );
             }
-            System.out.println((flights.size()+1)+". Go back\n" +
-                    "please make a choice between 1 and "+(flights.size()+1));
+            System.out.print(String.format("%-4s",(flights.size()+1))
+                    +"Go back\n" +
+                    "please make a choice between 1 and "+(flights.size()+1)+
+                    "Choice: "
+            );
             int choice = input.nextInt()-1;
             if (choice==flights.size()) {
                 return "goBack";
@@ -361,8 +440,6 @@ public class Driver {
 
                 System.out.print("Enter Date of Departure (Date format: yyyy-MM-dd): ");
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(input.next());
-
-
                 //i have to show to-froms separately if the user has already selected a from .. i should exclude that origin from the options
 //                ArrayList<String> origins = airline.getOperations(date,origin);
                 ArrayList<String> froms = airline.getFroms(date);
@@ -409,41 +486,37 @@ public class Driver {
         //full name and cnic
         for(int i=0;i<numberOfPassengers;i++){
             String[] passenger = new String[2];
-            System.out.println("Information for passenger "+i+1);
+            System.out.println("Information for passenger "+(i+1));
             passenger[0] = inputName();
             passenger[1] = inputCnic();
             passengers.add(passenger);
-            // 1. continue for the next passenger
-            // 2. drop
 
+            if(i+1<numberOfPassengers){
+                int choice;
+                while (true){
+                    try {
+                        System.out.print(
+                                "1. Continue for next passenger\n" +
+                                        "2. drop\n" +
+                                        "choice: ");
+                        choice = input.nextInt();
+                        if (!(choice==1 || choice==2)) throw new InputOutOfBound("");
+                        break;
+                    }
 
-            int choice;
-            while (true){
-                try {
-                    System.out.print(
-                            "1. Continue for next passenger\n" +
-                            "2. drop\n" +
-                            "choice: ");
-                    choice = input.nextInt();
-                    if (!(choice==1 || choice==2)) throw new InputOutOfBound("");
-                    break;
+                    catch (InputMismatchException ex){
+                        System.out.println("Please input integers only");
+                        input.nextLine();
+                    }
+                    catch (InputOutOfBound ex){
+                        System.out.println("Please choose between 1 and 2.");
+                    }
+
                 }
-
-                catch (InputMismatchException ex){
-                    System.out.println("Please input integers only");
-                    input.nextLine();
-                }
-                catch (InputOutOfBound ex){
-                    System.out.println("Please choose between 1 and 2.");
-                }
-
+                if(choice==2) return null;
             }
-            if(choice==2) return null;
         }
-
         return passengers;
-        // if at any point user wants to drop  return null
-
     }
 
     public static String inputFrom(ArrayList<String> froms) throws InputOutOfBound,InputMismatchException{
