@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Admin extends Person {
+    public static void main(String[] args) {
+    }
     Admin(){super("Anonymous");}
     Admin(String username){
         super(username);
@@ -15,22 +17,30 @@ public class Admin extends Person {
         statement.execute("INSERT INTO Flights(flightId,travelTo,travelFrom) VALUES('120','Lahore','Peshawar');");
     }
     public void cancelRoute(String flightId) throws SQLException{
-        String mostRecentBookingDate;
         /*
-         * get bookForDate from the bookings table for a specific flightId and orderby bookedforDate LIMIT 1
+        SELECT *
+        FROM flights
+        WHERE activeTill IS NULL;
+*/
+        String mostRecentlyBookedDate;
+        /*
+         * get bookedForDate from the bookings table for a specific flightId and orderby bookedforDate LIMIT 1
          * mostRecentBookingDate = resultSet.geString(bookedForDate)
          * UPDATE Flights SET activeTill = 'mostRecentBookingDate' WHERE flightId = 'flightID'
          * */
-        statement.execute("SELECT bookedForDate FROM Bookings WHERE flightId = '"+flightId+"' ORDER BY bookedForDate DESC LIMIT 1");
+        statement.execute("SELECT bookedForDate FROM Bookings WHERE flightId = '"+flightId+"' AND bookedForDate>=date('now') ORDER BY bookedForDate DESC LIMIT 1");
         ResultSet resultSet = statement.getResultSet();
+//        resultSet.wasNull(); this can come in handy
+//  this works as well but if resultset is empty, things will not work out well      UPDATE Flights SET activeTill=(SELECT bookedForDate FROM Bookings WHERE flightId = '112' AND bookedForDate>=date('now') ORDER BY bookedForDate DESC LIMIT 1) WHERE flightId='112'
+
+        // we also should check if the route is already cancelled.. for that activeTill column wont be null
+
         if(resultSet.next()){
-            mostRecentBookingDate = statement.getResultSet().getString("bookedForDate");
-            statement.execute("UPDATE Flights SET activeTill = 'mostRecentBookingDate' WHERE flightId = '"+flightId+"'");
+            mostRecentlyBookedDate = statement.getResultSet().getString("bookedForDate");
+            statement.execute("UPDATE Flights SET activeTill = '"+mostRecentlyBookedDate+"' WHERE flightId = '"+flightId+"';");
         }else {
             statement.execute("DELETE FROM Flights WHERE FlightId='"+flightId+"';");
         }
-
-
 //        UPDATE Customers
 //        SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
 //        WHERE CustomerID = 1;

@@ -50,4 +50,9 @@ public abstract class Person {
         return isSignedIn;
      }
 
+     void setConnection(Connection connection,Statement statement){
+        this.connection=connection;
+        this.statement=statement;
+     }
+
 }
