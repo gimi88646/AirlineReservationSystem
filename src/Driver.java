@@ -16,11 +16,13 @@ public class Driver {
     static Airline airline;
 
     public static void main(String[] args) {
+
         // see flights
         // login
         int choice;
         try {
             airline = new Airline();
+            airline.admin.addRoute();
         } catch (SQLException throwables) {
             System.out.println("Something really went wrong");
         }

@@ -6,7 +6,12 @@ import java.util.regex.Pattern;
 
 public class testInput {
     static Scanner input = new Scanner(System.in);
+    public enum Day { MON, TUE, WED, THU, FRI, SAT, SUN };
+
+
     public static void main(String[] args) {
+//        int k = new Integer(12);
+        testmethod(12,567);
         System.out.println("You do not have any active Bookings!".length());
 
         String cnic = inputCnic();
@@ -149,6 +154,11 @@ public class testInput {
             }
         }
         return cnic;
+    }
+
+    public static void testmethod (int... args){
+        System.out.println(args[1]);
+        System.out.println(args[0]);
     }
 
 }

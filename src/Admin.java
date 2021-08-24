@@ -1,3 +1,5 @@
+import java.sql.SQLException;
+
 public class Admin extends Person {
     Admin(){super("Anonymous");}
     Admin(String username){
@@ -6,7 +8,9 @@ public class Admin extends Person {
 
     // implementation of methods that are displayed in driver class
     //this method takes to-from time.. number of passengers for a carrier as parameters
-    public void addRoute(){}
+    public void addRoute() throws SQLException {
+        statement.execute("INSERT INTO Flights(flightId,travelTo,travelFrom) VALUES('120','Lahore','Peshawar');");
+    }
     public void cancelRoute(){}
     //some more methods
     /*
