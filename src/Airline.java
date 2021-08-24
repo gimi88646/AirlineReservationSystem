@@ -14,11 +14,11 @@ public class Airline {
 
      Connection connection;
      Statement statement;
-     Airline() throws SQLException{
-          connection = DriverManager.getConnection("jdbc:sqlite:D:\\Java Programs\\AirlineReservationSystem\\ArlineDatabase.db");
+     Airline() throws Exception{
+          Class.forName("org.sqlite.JDBC");
+          connection = DriverManager.getConnection("jdbc:sqlite:D:\\Java Programs\\AirlineReservationSystem\\AirlineDatabase.db");
           statement = connection.createStatement();
-          Person.connection=connection;
-          Person.statement=statement;
+          admin.setConnection(connection,statement);
      }
      void login(String username, String password){
 //          String query = "SELECT username,password WHERE username=''"

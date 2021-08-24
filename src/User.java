@@ -123,3 +123,10 @@ public class User extends Person {
         return statement.getResultSet();
     }
 }
+
+
+/*
+* 101,wash WC, new york,eseats, bseats,time
+* 'wash DC'
+*'wash' 'DC'
+* */

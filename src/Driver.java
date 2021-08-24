@@ -16,12 +16,14 @@ public class Driver {
     static Airline airline;
 
     public static void main(String[] args) {
+
         // see flights
         // login
         int choice;
         try {
             airline = new Airline();
-        } catch (SQLException throwables) {
+            // airline.admin.addRoute();
+        } catch (Exception throwables) {
             System.out.println("Something really went wrong");
         }
 //        String c =inputCnic();

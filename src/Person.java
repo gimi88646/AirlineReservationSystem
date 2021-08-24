@@ -9,17 +9,8 @@ public abstract class Person {
     boolean isSignedIn=false;
     String name;
     String username;
-   //  static Connection connection;
-
-   public Connection connect(String databasesource) throws Exception {
-      Connection conn = null;
-      Class.forName("org.sqlite.JDBC");
-      String url = databasesource;
-      conn = DriverManager.getConnection("jdbc:sqlite:" + url);
-      System.out.println("Connection to database has been established");
-      return conn;}
-      
-    static Statement statement;
+     Connection connection;
+     Statement statement;
 //    {
 //        try {
 //             connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
@@ -39,6 +30,10 @@ public abstract class Person {
 
     //user and admin shares these common methods..kya mujhe inki implementation yahan krni chahiye yaa individually har class me alag se implement karu
     //apparently iske andar bhi wohii kam ho rha he... signedIn or username ko reassign krna
+    void setConnection(Connection connection,Statement statement){
+        this.connection= connection;
+        this.statement=statement;
+    }
 
      void logOut(){
         isSignedIn=false;
