@@ -1,3 +1,6 @@
+import javax.xml.transform.Result;
+import java.awt.image.RescaleOp;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Admin extends Person {
@@ -19,11 +22,18 @@ public class Admin extends Person {
          * UPDATE Flights SET activeTill = 'mostRecentBookingDate' WHERE flightId = 'flightID'
          * */
         statement.execute("SELECT bookedForDate FROM Bookings WHERE flightId = '"+flightId+"' ORDER BY bookedForDate DESC LIMIT 1");
-        mostRecentBookingDate = statement.getResultSet().getString("bookedForDate");
-        statement.execute("UPDATE Flights SET activeTill = 'mostRecentBookingDate' WHERE flightId = '"+flightId+"'");
-        UPDATE Customers
-        SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
-        WHERE CustomerID = 1;
+        ResultSet resultSet = statement.getResultSet();
+        if(resultSet.next()){
+            mostRecentBookingDate = statement.getResultSet().getString("bookedForDate");
+            statement.execute("UPDATE Flights SET activeTill = 'mostRecentBookingDate' WHERE flightId = '"+flightId+"'");
+        }else {
+            statement.execute("DELETE FROM Flights WHERE FlightId='"+flightId+"';");
+        }
+
+
+//        UPDATE Customers
+//        SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+//        WHERE CustomerID = 1;
     }
     //some more methods
     /*
