@@ -31,32 +31,12 @@ public class User extends Person {
     public void book(ArrayList<String[]> passengers, ArrayList bookingInfo) throws SQLException{
     //    date =bookinginfo[0]
     //     number of passegers = passengers.size
-        // String date= (String) bookingInfo.get(0);
-        // char seatType = (char) bookingInfo.get(2);
-        // String flightId =(String) bookingInfo.get(3);
+        String date= (String) bookingInfo.get(0);
+        char seatType = (char) bookingInfo.get(2);
+        String flightId =(String) bookingInfo.get(3);
 
         // //this method is to insert data into bookings table..  after data insertion the operation is complete
 
-<<<<<<< HEAD
-        // // arraylist banani he order ke hisab se ..
-        // // phr wo info insert query laga kr database me save krni he .. khatam kahani....
-        // passengers.forEach((passenger)->{
-        //     try {
-        //         statement.execute("INSERT INTO " +
-        //                 "Bookings(flightId,bookedOnDate,bookedForDate,bookedBy,fullName,cnic,seatType) VALUES(" +
-        //                 flightId +","+
-        //                 "date('now'),"+
-        //                 date+","+
-        //                 username+","+
-        //                 passenger[0]+","+
-        //                 passenger[1]+","+
-        //                 seatType+","+
-        //                 ")");
-        //     } catch (SQLException throwables) {
-        //         throwables.printStackTrace();
-        //     }
-        // });
-=======
         // arraylist banani he order ke hisab se ..
         // phr wo info insert query laga kr database me save krni he .. khatam kahani....
         passengers.forEach((passenger)->{
@@ -75,7 +55,6 @@ public class User extends Person {
                 throwables.printStackTrace();
             }
         });
->>>>>>> master
 
         String dateofbooking = (String) bookingInfo.get(0);
         char seattype = (char) bookingInfo.get(2);
@@ -111,12 +90,6 @@ public class User extends Person {
         // aaj ki date se
         // ye method return karega resultset.. jisko process karega driver
         //
-<<<<<<< HEAD
-        // statement.execute();
-        // this method returns a resultSet: bookings made only by a username and are
-        // greater or equals to today
-        statement.execute("SELECT * FROM Bookings WHERE bookedBy = '" + username + "' bookedForDate>= date('now')");
-=======
         //statement.execute();
         // this method returns a resultSet:  bookings made only by a username and are greater or equals to today
 
@@ -131,26 +104,10 @@ public class User extends Person {
                 "INNER JOIN Flights ON Bookings.flightId=Flights.flightId " +
                 "WHERE Bookings.bookedBy = '"+username+"' AND bookedForDate>= date('now') " +
                 "ORDER BY bookedForDate");
->>>>>>> master
         return statement.getResultSet();
         // SELECT * FROM BOOKINGS WHERE bookedBy='gimi88646' and bookedForDate>=
         // date('now')
     }
-<<<<<<< HEAD
-
-    public void cancelBooking(int bookingId) {
-        // for this module getBookings will be called first in Driver then the user is
-        // asked to input the booking he wants to cancel
-        // then that information is passed as parameter in this method and SQL gets in
-        // action .. not sure whether is should delete the booking or change the status
-        // to cancelled
-        // this method first calls getBookigs and and results get displayed by the
-        // driver class
-    }
-
-    public ResultSet viewHistory() throws SQLException {
-        statement.execute("SELECT * FROM Bookings WHERE bookedBy = '" + username + "' bookedForDate<date('now')");
-=======
     public void cancelBooking(String bookingId) throws SQLException{
 //        for this module getBookings will be called first in Driver then the user is asked to input the booking he wants to cancel
 //        then that information is passed as parameter in this method and SQL gets in action .. not sure whether is should delete the booking or change the status to cancelled
@@ -163,7 +120,6 @@ public class User extends Person {
                 "INNER JOIN Flights ON Bookings.flightId=Flights.flightId " +
                 "WHERE Bookings.bookedBy = '"+username+"' AND bookedForDate<date('now') " +
                 "ORDER BY bookedForDate");
->>>>>>> master
         return statement.getResultSet();
     }
 }

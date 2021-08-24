@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.sql.Connection;
 
 public class Admin extends Person {
     Admin(){super("Anonymous");}
@@ -8,11 +9,19 @@ public class Admin extends Person {
 
     // implementation of methods that are displayed in driver class
     //this method takes to-from time.. number of passengers for a carrier as parameters
-    public void addRoute(ArrayList<String> flightinfo){
-        for (int i=0; i<=flightinfo.size(); i++){
-            String flight = flightinfo.get(i);
+    public void addRoute(ArrayList<String> flightinfo) throws Exception{
+
+        String query = "'"+flightinfo.get(0)+"'";
+        
+        for (int i=1; i<=flightinfo.size()-1; i++){
+            String infopiece = ","+"'"+flightinfo.get(i)+"'";
+            query+=infopiece;
             
         }
+            Connection cnct = databaseoperations.connect("D:\\Java Programs\\AirlineReservationSystem\\AirlineDatabase.db");
+            databaseoperations.senddata(cnct, "INSERT INTO Flights(flightId,travelTo,travelFrom,numberOfBcatSeats,numberOfEcatSeats,takeOffTime) VALUES("+query+")");
+            databaseoperations.close(cnct);
+            // statement.execute();
     }
     public void cancelRoute(){}
     //some more methods
@@ -28,3 +37,5 @@ public class Admin extends Person {
     * js flight ko inactive kiya
     * */
 }
+//001,washington DC,New York,20,30,3:55:00
+//

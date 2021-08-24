@@ -152,3 +152,30 @@ public class testInput {
     }
 
 }
+class admintest{
+    public static void main(String[] args) {
+        Scanner userinp = new Scanner(System.in);
+            System.out.print("Enter Flight ID"); String fid = userinp.nextLine();
+            System.out.print("Enter Travel To:"); String trvto = userinp.nextLine();
+            System.out.print("Enter travel From:"); String trvfrom = userinp.nextLine();
+            System.out.print("Enter Number of Business Seats"); String bseats = userinp.nextLine();
+            System.out.print("Enter Number of Economy Seats"); String eseats = userinp.nextLine();
+            System.out.print("Enter Time"); String time = userinp.nextLine();
+            ArrayList<String> flightinfo = new ArrayList<String>();
+            flightinfo.add(fid); 
+            flightinfo.add(trvto); 
+            flightinfo.add(trvfrom); 
+            flightinfo.add(bseats); 
+            flightinfo.add(eseats); 
+            flightinfo.add(time);
+            Admin adminobj = new Admin();
+            try{
+
+                adminobj.addRoute(flightinfo); 
+            }
+            catch(Exception exception){
+                exception.printStackTrace();
+            }
+            
+    }
+}
