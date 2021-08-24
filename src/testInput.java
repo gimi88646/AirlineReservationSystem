@@ -170,7 +170,6 @@ class admintest{
             flightinfo.add(time);
             Admin adminobj = new Admin();
             try{
-
                 adminobj.addRoute(flightinfo); 
             }
             catch(Exception exception){

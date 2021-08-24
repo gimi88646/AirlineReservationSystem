@@ -18,10 +18,10 @@ public class Admin extends Person {
             query+=infopiece;
             
         }
-            Connection cnct = databaseoperations.connect("D:\\Java Programs\\AirlineReservationSystem\\AirlineDatabase.db");
-            databaseoperations.senddata(cnct, "INSERT INTO Flights(flightId,travelTo,travelFrom,numberOfBcatSeats,numberOfEcatSeats,takeOffTime) VALUES("+query+")");
-            databaseoperations.close(cnct);
-            // statement.execute();
+            // Connection cnct = databaseoperations.connect("D:\\Java Programs\\AirlineReservationSystem\\AirlineDatabase.db");
+            // databaseoperations.senddata(cnct, "INSERT INTO Flights(flightId,travelTo,travelFrom,numberOfBcatSeats,numberOfEcatSeats,takeOffTime) VALUES("+query+")");
+            // databaseoperations.close(cnct);
+            statement.execute("INSERT INTO Flights(flightId,travelTo,travelFrom,numberOfBcatSeats,numberOfEcatSeats,takeOffTime) VALUES("+query+")");
     }
     public void cancelRoute(){}
     //some more methods

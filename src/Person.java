@@ -9,7 +9,16 @@ public abstract class Person {
     boolean isSignedIn=false;
     String name;
     String username;
-    static Connection connection;
+   //  static Connection connection;
+
+   public Connection connect(String databasesource) throws Exception {
+      Connection conn = null;
+      Class.forName("org.sqlite.JDBC");
+      String url = databasesource;
+      conn = DriverManager.getConnection("jdbc:sqlite:" + url);
+      System.out.println("Connection to database has been established");
+      return conn;}
+      
     static Statement statement;
 //    {
 //        try {
