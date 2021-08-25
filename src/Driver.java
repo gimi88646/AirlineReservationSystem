@@ -564,5 +564,25 @@ public class Driver {
         if (choice<1 ||choice>destinationsLength) throw new InputOutOfBound("Please make sure your input lies in range");
         return destinations.get(choice-1);
     }
+
+    public static String inputTime(){
+//        (([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])
+        String pattern = "(([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])";
+        Pattern timePattern = Pattern.compile(pattern);
+        while (true){
+            try {
+            System.out.println("Time Format Should be HH:MM:SS in 24 Hours. ");
+            System.out.print("Input Time: ");
+            String time =input.nextLine();
+            Matcher matcher = timePattern.matcher(time);
+            boolean matches = matcher.matches();
+            if(!matches) throw  new InputMismatchException("Please Enter a Valid Time!");
+            return time;
+            }
+            catch (InputMismatchException ex){
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
 }
 

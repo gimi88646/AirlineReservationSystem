@@ -4,8 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Admin extends Person {
-    public static void main(String[] args) {
-    }
+
     Admin(){super("Anonymous");}
     Admin(String username){
         super(username);
@@ -40,9 +39,7 @@ public class Admin extends Person {
             statement.execute("UPDATE Flights SET activeTill = '"+mostRecentlyBookedDate+"' WHERE flightId = '"+flightId+"';");
         }else {
             statement.execute("DELETE FROM Flights WHERE FlightId='"+flightId+"';");
-
         }
         return mostRecentlyBookedDate;
-
     }
 }

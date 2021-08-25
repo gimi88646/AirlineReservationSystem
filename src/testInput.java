@@ -9,7 +9,11 @@ public class testInput {
     public enum Day { MON, TUE, WED, THU, FRI, SAT, SUN };
 
 
+
+
     public static void main(String[] args) {
+        String time = Driver.inputTime();
+        System.out.println(time);
         String abc ="";
         System.out.println(abc.equals(""));
 //        int k = new Integer(12);
