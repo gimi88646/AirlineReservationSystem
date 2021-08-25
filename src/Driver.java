@@ -26,7 +26,7 @@ public class Driver {
             System.out.println("Something really went wrong");
         }
         catch(Exception exception){
-            exception.printStackTrace();
+            System.out.println("Problem Caused");;
         }
 //        String c =inputCnic();
 
