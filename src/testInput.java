@@ -10,6 +10,8 @@ public class testInput {
 
 
     public static void main(String[] args) {
+        String abc ="";
+        System.out.println(abc.equals(""));
 //        int k = new Integer(12);
         testmethod(12,567);
         System.out.println("You do not have any active Bookings!".length());

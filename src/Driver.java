@@ -141,6 +141,7 @@ public class Driver {
                             // ask admin for selection to grab flight ID and then call airline.cancelRoute
                             ArrayList<String> froms = airline.getFroms();
                             String from = inputFrom(froms);
+                            System.out.println("From = "+ from);
 
                             ArrayList<String> destinations = airline.getDestinations(from);
                             String destination = inputDestination(destinations);
@@ -149,11 +150,15 @@ public class Driver {
                             ResultSet resultSet=airline.getFlights(from,destination);
                             String response =  showFlights(resultSet);
                             if(response.equals("notFound")){
-                                System.out.println("NO ACTIVE ROUTE BETWEEN "+destination+" AND "+from+'.');
+                                System.out.println("No active route between "+destination+" and "+from+'.');
                             }else if(response.equals("goBack")){}
                             else {
-                                airline.admin.cancelRoute(response);
-                                System.out.println("\nFlight "+response+ " will no longer take bookings for new dates.\n");
+                                String mostRecentlyBookedDate="";
+                                airline.admin.cancelRoute(response,mostRecentlyBookedDate);
+
+                                if(!mostRecentlyBookedDate.equals(""))
+                                System.out.println("\nFlight "+response+ " is only taking bookings till "+mostRecentlyBookedDate+".\n");
+                                else System.out.println("\nFlight "+response+ " is no longer available.");
                             }
                             break;
                         }

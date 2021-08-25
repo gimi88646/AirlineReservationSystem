@@ -16,13 +16,12 @@ public class Admin extends Person {
     public void addRoute() throws SQLException {
         statement.execute("INSERT INTO Flights(flightId,travelTo,travelFrom) VALUES('120','Lahore','Peshawar');");
     }
-    public void cancelRoute(String flightId) throws SQLException{
+    public void cancelRoute(String flightId,String mostRecentlyBookedDate) throws SQLException{
         /*
         SELECT *
         FROM flights
         WHERE activeTill IS NULL;
 */
-        String mostRecentlyBookedDate;
         /*
          * get bookedForDate from the bookings table for a specific flightId and orderby bookedforDate LIMIT 1
          * mostRecentBookingDate = resultSet.geString(bookedForDate)
@@ -36,10 +35,11 @@ public class Admin extends Person {
         // we also should check if the route is already cancelled.. for that activeTill column wont be null
 
         if(resultSet.next()){
-            mostRecentlyBookedDate = statement.getResultSet().getString("bookedForDate");
+            mostRecentlyBookedDate = resultSet.getString("bookedForDate");
             statement.execute("UPDATE Flights SET activeTill = '"+mostRecentlyBookedDate+"' WHERE flightId = '"+flightId+"';");
         }else {
             statement.execute("DELETE FROM Flights WHERE FlightId='"+flightId+"';");
+
         }
 //        UPDATE Customers
 //        SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
