@@ -15,7 +15,7 @@ public class Airline {
      Connection connection;
      Statement statement;
      Airline() throws SQLException{
-          connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
+          connection = DriverManager.getConnection("jdbc:sqlite:D:\\Java Programs\\AirlineReservationSystem\\AirlineDatabase.db");
           statement = connection.createStatement();
           admin.setConnection(connection,statement);
      }
