@@ -25,6 +25,9 @@ public class Driver {
         } catch (SQLException throwables) {
             System.out.println("Something really went wrong");
         }
+        catch(Exception exception){
+            exception.printStackTrace();
+        }
 //        String c =inputCnic();
 
         do {
