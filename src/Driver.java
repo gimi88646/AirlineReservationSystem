@@ -153,10 +153,8 @@ public class Driver {
                                 System.out.println("No active route between "+destination+" and "+from+'.');
                             }else if(response.equals("goBack")){}
                             else {
-                                String mostRecentlyBookedDate="";
-                                airline.admin.cancelRoute(response,mostRecentlyBookedDate);
-
-                                if(!mostRecentlyBookedDate.equals(""))
+                                String mostRecentlyBookedDate=airline.admin.cancelRoute(response);
+                                if(!(mostRecentlyBookedDate==null))
                                 System.out.println("\nFlight "+response+ " is only taking bookings till "+mostRecentlyBookedDate+".\n");
                                 else System.out.println("\nFlight "+response+ " is no longer available.");
                             }
