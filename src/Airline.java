@@ -17,8 +17,7 @@ public class Airline {
      Airline() throws SQLException{
           connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
           statement = connection.createStatement();
-          Person.connection=connection;
-          Person.statement=statement;
+          admin.setConnection(connection,statement);
      }
      void login(String username, String password){
 //          String query = "SELECT username,password WHERE username=''"
@@ -66,24 +65,8 @@ public class Airline {
      ResultSet getFlights(Date date, String to, String from,int numberOfPassengers,char seatType) throws SQLException {
           DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
           String strDate = dateFormat.format(date);  // 2021-12-12
-          statement.execute("SELECT flightId,numberOf"+seatType+"catSeats FROM Flights WHERE travelTo='"+to+"' AND travelFrom='"+from+"';"); // jab inactiveSince ka attribute add hoga tou mujhe iska date check rkhna parega k
+          statement.execute("SELECT flightId,numberOf"+seatType+"catSeats FROM Flights WHERE"+" activeTill>='"+strDate+"' AND travelTo='"+to+"' AND travelFrom='"+from+"';"); // jab inactiveSince ka attribute add hoga tou mujhe iska date check rkhna parega k
           ResultSet flightsResultSet = statement.getResultSet();
-
-//          while(flightsResultSet.next()){
-//               // result set dusri iteration me count kaa bata rha he
-//               // jiska mtlb he he hamarii loop ke andar query krne pr hamari flights ki query corrupt ho rhi he
-//               System.out.println("column 1= "+flightsResultSet.getInt("flightId"));
-//               System.out.println("column 2= "+flightsResultSet.getInt("numberOf"+seatType+"catSeats"));
-//               int flightId = flightsResultSet.getInt("flightId");  // error.. no such column 'flightId'
-//               int numberOfEorBseatTypes = flightsResultSet.getInt("numberOf"+seatType+"catSeats");
-//               statement.execute("SELECT count(*) AS seatCount FROM Bookings WHERE flightId ='"+flightId+"' AND seatType='"+seatType+"' AND bookedForDate='"+strDate+"';");
-//               int seatCount = statement.getResultSet().getInt("seatCount");
-//               System.out.println("seatcount = " + seatCount);
-//               if(seatCount+numberOfPassengers<=numberOfEorBseatTypes){
-//                    flightIds.add(flightId);
-//               }
-//               System.out.println("in while loop");
-//          }
           ArrayList<int[]> flightsdata = new ArrayList();
           while(flightsResultSet.next()){
                int[] flightdata = new int[2];
@@ -91,6 +74,8 @@ public class Airline {
                flightdata[1] = flightsResultSet.getInt("numberOf"+seatType+"catSeats");
                flightsdata.add(flightdata);
           }
+          if(flightsdata.size()==0) return null;
+          //this is the case when resultset has some data....   flightsDate.size()==0 means no data
           ArrayList<Integer> flightIds = new ArrayList<>();
           for(int i=0;i<flightsdata.size();i++){
                int flightId = flightsdata.get(i)[0];
@@ -107,12 +92,23 @@ public class Airline {
                query+=" OR flightId="+flightIds.get(i);
           }
 
-          System.out.println("query = "+query);
           statement.execute("SELECT * FROM Flights WHERE "+query+";");
           return  statement.getResultSet();
+          //case: no flights exist? if count inside while loop doesn't get incremented return null.. then handle it in driver
      }
 
-     ArrayList<String> getFroms(Date date) throws SQLException{
+     //this method gets called by admin
+     ResultSet getFlights(String from,String to) throws SQLException{
+          statement.execute("SELECT flightId,travelTo,travelFrom,takeOffTime FROM Flights WHERE travelFrom='"+from+"' AND travelTo='"+to+"' AND ActiveTill IS NULL;");
+          return statement.getResultSet();
+//          boolean flightsFound = false;
+//          while(resultSet.next()){
+//               flightsFound=true;
+//          }
+//          if(!flightsFound) return null;
+     }
+
+     ArrayList<String> getFroms() throws SQLException{
           ArrayList<String> froms = new ArrayList();
           statement.execute("SELECT DISTINCT travelFrom FROM FLights;");
           ResultSet resultSet = statement.getResultSet();
@@ -121,7 +117,7 @@ public class Airline {
           }
           return froms;
      }
-     ArrayList<String> getDestinations(Date date,String from) throws SQLException{
+     ArrayList<String> getDestinations(String from) throws SQLException{
           ArrayList<String> destinations = new ArrayList();
           statement.execute("SELECT DISTINCT travelTo FROM flights WHERE travelFrom='"+from+"';");
           ResultSet resultSet = statement.getResultSet();

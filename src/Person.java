@@ -9,20 +9,27 @@ public abstract class Person {
     boolean isSignedIn=false;
     String name;
     String username;
-    static Connection connection;
-    static Statement statement;
-//    {
-//        try {
-//             connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
-//             statement = connection.createStatement();
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//    }
+    Connection connection;
+    Statement statement;
+
+
+    {
+        try {
+             connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
+             statement = connection.createStatement();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+
 
     Person(String username){
         this.username = username;
+
     }
+
     //should logout be a method?
     //if found it reassign the attributes of User Object and provide extra functionality
     // extra functionality  = history , view bookings, cancel bookings.
@@ -41,6 +48,11 @@ public abstract class Person {
      }
      boolean getSignedInStatus(){
         return isSignedIn;
+     }
+
+     void setConnection(Connection connection,Statement statement){
+        this.connection=connection;
+        this.statement=statement;
      }
 
 }
