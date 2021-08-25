@@ -9,7 +9,13 @@ public class testInput {
     public enum Day { MON, TUE, WED, THU, FRI, SAT, SUN };
 
 
+
+
     public static void main(String[] args) {
+        String time = Driver.inputTime();
+        System.out.println(time);
+        String abc ="";
+        System.out.println(abc.equals(""));
 //        int k = new Integer(12);
         testmethod(12,567);
         System.out.println("You do not have any active Bookings!".length());

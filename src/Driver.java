@@ -22,11 +22,13 @@ public class Driver {
         int choice;
         try {
             airline = new Airline();
-            // airline.admin.addRoute();
-        } catch (Exception throwables) {
+        } catch (SQLException throwables) {
             System.out.println("Something really went wrong");
         }
-        // String c =inputCnic();
+        catch(Exception exception){
+            System.out.println("Problem Caused");
+        }
+//        String c =inputCnic();
 
         do {
             try {
@@ -117,8 +119,8 @@ public class Driver {
                     System.out.println("1. Add a route\n" + "2. Cancel a route\n" + "3. Cancel a flight\n"
                             + "4. Log Out\n" + "5. Exit");
                     choice = input.nextInt();
-                    if (choice > 5 || choice < 1)
-                        throw new InputOutOfBound("Make sure your input is correct");
+                    if (choice > 5 || choice < 1) throw new InputOutOfBound("Make sure your input is correct");
+
                     switch (choice) {
                         case 1: {
                             System.out.print("Enter Flight ID: ");
@@ -150,15 +152,37 @@ public class Driver {
                             // the admin is supposed to enter a new flight and information relevant to the
                             // fight..
                             // and that information is inserted into the flights table in database
+
                             break;
 
                         }
+                        // admin cancels a route
                         case 2: {
-                            // cancel a route
-                            // the admin is supposed to cancel a route by making a selection amonn the
-                            // flights available in flights table
+                            //cancel a route
+                            // show admin to and froms .. display the flights of that to and from..
+                            // ask admin for selection to grab flight ID and then call airline.cancelRoute
+                            ArrayList<String> froms = airline.getFroms();
+                            String from = inputFrom(froms);
+                            System.out.println("From = "+ from);
+
+                            ArrayList<String> destinations = airline.getDestinations(from);
+                            String destination = inputDestination(destinations);
+                            //ab mujhe isme se flight id select krni he ,
+                            // unlike user ki tarah number of passengers and seatType , isme matter nahi krty
+                            ResultSet resultSet=airline.getFlights(from,destination);
+                            String response =  showFlights(resultSet);
+                            if(response.equals("notFound")){
+                                System.out.println("No active route between "+destination+" and "+from+'.');
+                            }else if(response.equals("goBack")){}
+                            else {
+                                String mostRecentlyBookedDate=airline.admin.cancelRoute(response);
+                                if(!(mostRecentlyBookedDate==null))
+                                System.out.println("\nFlight "+response+ " is only taking bookings till "+mostRecentlyBookedDate+".\n");
+                                else System.out.println("\nFlight "+response+ " is no longer available.");
+                            }
                             break;
                         }
+                        // admin cancels a route for a date
                         case 3: {
                             // cancel a flight
                             // the admin is supposed to enter a date and to-from , and on that specific date
@@ -405,10 +429,8 @@ public class Driver {
     }
 
     private static String showFlights(ResultSet resultSet) throws SQLException {
-        boolean flightFound = false;
-        System.out.println("\nAvailable Flights\n");
-        // kyaa hi baat ho ke me sirf time puchoo ussy se or kahu in timings me se
-        // choose ke .. jissy wo mujhe index dega..
+        boolean flightFound =false;
+        System.out.println("\nActive Flights from "+resultSet.getString("travelFrom")+" to "+resultSet.getString("travelTo")+"\n");
         ArrayList<String[]> flights = new ArrayList<>();
         while (resultSet.next()) {
             flightFound = true;
@@ -428,23 +450,22 @@ public class Driver {
                 System.out.println(String.format("%-4s", (i + 1) + ".") + String.format("%-20s", flight[0])
                         + String.format("%-20s", flight[1]));
             }
-            System.out.print(String.format("%-4s", (flights.size() + 1)) + "Go back\n"
-                    + "please make a choice between 1 and " + (flights.size() + 1) + "Choice: ");
-            int choice = input.nextInt() - 1;
-            if (choice == flights.size()) {
+            System.out.print(String.format("%-4s",(flights.size()+1))
+                    +"Go back\n" +
+                    "please make a choice between 1 and "+(flights.size()+1)+
+                    "\nChoice: "
+            );
+            int choice = input.nextInt()-1;
+            if (choice==flights.size()) {
                 return "goBack";
             } else {
                 return flights.get(choice)[0];
             }
-
         }
-
-        else
-            return "notFound";
-        // yahan jaa kr see flights kaa pura hua
-        // mujhe return karani chahiye string.. agar user peeche jana chahta he tou go
-        // back ki string jaegi.. or jahan se method call hua he wahan if go back then
-        // break ki instruction chale
+        else return "notFound";
+        // possible strings flightId .. go back .. notFound
+        //yahan jaa kr see flights kaa pura hua
+        // mujhe return karani chahiye string.. agar user peeche jana chahta he tou go back ki string jaegi.. or jahan se method call hua he wahan if go back then break ki instruction chale
     }
 
     private static String seeFlights(ArrayList bookingInfo) {
@@ -459,13 +480,12 @@ public class Driver {
 
                 System.out.print("Enter Date of Departure (Date format: yyyy-MM-dd): ");
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(input.next());
-                // i have to show to-froms separately if the user has already selected a from ..
-                // i should exclude that origin from the options
-                // ArrayList<String> origins = airline.getOperations(date,origin);
-                ArrayList<String> froms = airline.getFroms(date);
+                //i have to show to-froms separately if the user has already selected a from .. i should exclude that origin from the options
+//                ArrayList<String> origins = airline.getOperations(date,origin);
+                ArrayList<String> froms = airline.getFroms();
                 String from = inputFrom(froms);
 
-                ArrayList<String> destinations = airline.getDestinations(date, from);
+                ArrayList<String> destinations = airline.getDestinations(from);
                 String destination = inputDestination(destinations);
 
                 System.out.print("How many passengers? ");
@@ -562,20 +582,21 @@ public class Driver {
         return destinations.get(choice - 1);
     }
 
-    public static String inputTime() {
-        // (([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])
+    public static String inputTime(){
+//        (([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])
         String pattern = "(([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])";
         Pattern timePattern = Pattern.compile(pattern);
-        while (true) {
+        while (true){
             try {
-                System.out.print("Input Time: ");
-                String time = input.nextLine();
-                Matcher matcher = timePattern.matcher(time);
-                boolean matches = matcher.matches();
-                if (!matches)
-                    throw new InputMismatchException("Please Enter a Valid Time!");
-                return time;
-            } catch (InputMismatchException ex) {
+            System.out.println("Time Format Should be HH:MM:SS in 24 Hours. ");
+            System.out.print("Input Time: ");
+            String time =input.nextLine();
+            Matcher matcher = timePattern.matcher(time);
+            boolean matches = matcher.matches();
+            if(!matches) throw  new InputMismatchException("Please Enter a Valid Time!");
+            return time;
+            }
+            catch (InputMismatchException ex){
                 System.out.println(ex.getMessage());
             }
         }
