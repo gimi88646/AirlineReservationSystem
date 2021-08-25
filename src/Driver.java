@@ -132,8 +132,7 @@ public class Driver {
                             String bseats = input.nextLine();
                             System.out.print("Enter Number of Economy Seats: ");
                             String eseats = input.nextLine();
-                            System.out.print("Enter Time: ");
-                            String time = input.nextLine();
+                            String time  = inputTime();
                             ArrayList<String> flightinfo = new ArrayList<String>();
                             flightinfo.add(fid);
                             flightinfo.add(trvto);
@@ -143,7 +142,7 @@ public class Driver {
                             flightinfo.add(time);
                             try {
                                 airline.admin.addRoute(flightinfo);
-                                
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -561,5 +560,24 @@ public class Driver {
         if (choice < 1 || choice > destinationsLength)
             throw new InputOutOfBound("Please make sure your input lies in range");
         return destinations.get(choice - 1);
+    }
+
+    public static String inputTime() {
+        // (([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])
+        String pattern = "(([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])";
+        Pattern timePattern = Pattern.compile(pattern);
+        while (true) {
+            try {
+                System.out.print("Input Time: ");
+                String time = input.nextLine();
+                Matcher matcher = timePattern.matcher(time);
+                boolean matches = matcher.matches();
+                if (!matches)
+                    throw new InputMismatchException("Please Enter a Valid Time!");
+                return time;
+            } catch (InputMismatchException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }
 }
