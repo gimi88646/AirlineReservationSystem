@@ -9,6 +9,7 @@ import java.util.Scanner;
 import java.sql.ResultSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 //import java.lang.WordUtils;
 
 public class Driver {
@@ -20,14 +21,7 @@ public class Driver {
         // see flights
         // login
         int choice;
-        try {
-            airline = new Airline();
-        } catch (SQLException throwables) {
-            System.out.println("Something really went wrong");
-        }
-        catch(Exception exception){
-            System.out.println("Problem Caused");
-        }
+        airline = new Airline();
 //        String c =inputCnic();
 
         do {

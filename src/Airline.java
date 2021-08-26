@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+// import org.sqlite.JDBC;
 
 public class Airline {
 
@@ -14,11 +15,16 @@ public class Airline {
 
      Connection connection;
      Statement statement;
-     Airline() throws Exception{
-          Class.forName("org.sqlite.JDBC");
-          connection = DriverManager.getConnection("jdbc:sqlite:D:\\Java Programs\\AirlineReservationSystem\\AirlineDatabase.db");
-          statement = connection.createStatement();
-          admin.setConnection(connection,statement);
+     Airline(){
+          try{
+               connection = DriverManager.getConnection("jdbc:sqlite:D:\\Java Programs\\AirlineReservationSystem\\AirlineDatabase.db");
+               statement = connection.createStatement();
+               admin.setConnection(connection,statement);
+
+          }
+          catch(SQLException sException){
+               sException.printStackTrace();
+          }
      }
      void login(String username, String password){
 //          String query = "SELECT username,password WHERE username=''"
