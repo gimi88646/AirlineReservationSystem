@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class User extends Person {
 
+    ArrayList<String[]> notifications = new ArrayList();
+
 
 
     // this attribute will be useful in Airline class because we will be able to check if user is a member
@@ -90,6 +92,10 @@ public class User extends Person {
                 "WHERE Bookings.bookedBy = '"+username+"' AND bookedForDate<date('now') " +
                 "ORDER BY bookedForDate");
         return statement.getResultSet();
+    }
+    private void getNotifications() throws SQLException{
+        /*this method runs query */
+//        return statement.getResultSet();
     }
 }
 

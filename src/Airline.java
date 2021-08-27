@@ -18,6 +18,7 @@ public class Airline {
           connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
           statement = connection.createStatement();
           admin.setConnection(connection,statement);
+          admin.cancelFlight("111","2021-08-24","covid 19");
      }
      void login(String username, String password){
 //          String query = "SELECT username,password WHERE username=''"
@@ -63,10 +64,20 @@ public class Airline {
      }
 
      ResultSet getFlights(Date date, String to, String from,int numberOfPassengers,char seatType) throws SQLException {
+          /*
+          * dont include flights in the resultset if they are in cancelledFlights Table for the date user has provided
+          * */
+
           DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+          // jo jo flighs to from match krta ho... date<=activeFill ...
+          // uss flightId ke liye ye wali date cancellation table me nahiii honi chahiye
+
           String strDate = dateFormat.format(date);  // 2021-12-12
           statement.execute("SELECT flightId,numberOf"+seatType+"catSeats FROM Flights WHERE"+" activeTill>='"+strDate+"' AND travelTo='"+to+"' AND travelFrom='"+from+"';"); // jab inactiveSince ka attribute add hoga tou mujhe iska date check rkhna parega k
-          ResultSet flightsResultSet = statement.getResultSet();
+
+
+         ResultSet flightsResultSet = statement.getResultSet();
+
           ArrayList<int[]> flightsdata = new ArrayList();
           while(flightsResultSet.next()){
                int[] flightdata = new int[2];

@@ -23,13 +23,12 @@ public class Driver {
         try {
             airline = new Airline();
         } catch (SQLException throwables) {
+            System.out.println(throwables);
             System.out.println("Something really went wrong");
         }
 //        String c =inputCnic();
-
         do {
             try {
-
                 if (airline.user.getSignedInStatus()) {
                     //how should i change the options if the user has performed sign in
                     //when user signs in and he is a regular user he should be able to see following options
@@ -141,7 +140,6 @@ public class Driver {
                             // ask admin for selection to grab flight ID and then call airline.cancelRoute
                             ArrayList<String> froms = airline.getFroms();
                             String from = inputFrom(froms);
-                            System.out.println("From = "+ from);
 
                             ArrayList<String> destinations = airline.getDestinations(from);
                             String destination = inputDestination(destinations);
@@ -257,7 +255,7 @@ public class Driver {
         } while (true);
     }
 
-    public  static String displayBookings(ResultSet resultSet,boolean wantsToCancelBooking) throws SQLException{
+    public static String displayBookings(ResultSet resultSet,boolean wantsToCancelBooking) throws SQLException{
         // this method can print bookings that are history, as well as bookings that are not yet past
         // display boookingId .. bookedOndate bookedFordate cnic fullname seatType ...to From and time
 
