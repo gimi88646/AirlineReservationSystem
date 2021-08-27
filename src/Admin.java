@@ -49,8 +49,8 @@ public class Admin extends Person {
 
     // admin wants to cancel a flight for a date..
 
-    public void cancelFlight( String flightId,String date, String reason) throws SQLException{
-        String notification = "Dear user your Booking for Flight "+flightId+ " has been cancelled due to "+reason;
+    public void cancelFlight( String flightId,String date, String message) throws SQLException{
+        String notification = "Your Booking for Flight "+flightId+ " has been cancelled!\n " + message;
         /*
         * when admin cancels a flight for a day..
         * it gets inserted to cancelled flights as date with
@@ -65,64 +65,49 @@ public class Admin extends Person {
 //                "FOREGIN KEY flightId"+
 //                // some columns
 //                ");");
-        String createTableSql = "CREATE TABLE IF NOT EXISTS CancelledFlights (" +
+        String createCancelledFlightsTableSql = "CREATE TABLE IF NOT EXISTS CancelledFlights (" +
                 "cancellationId INTEGER NOT NULL UNIQUE," +
                 "flightId INTEGER," +
                 "cancelledDate date," +
+                "whenCancelled datetime,"+
                 "PRIMARY KEY(cancellationId AUTOINCREMENT)," +
                 "FOREIGN KEY(flightId) REFERENCES Flights(flightId)" +
                 ");";
-        statement.execute(createTableSql);
-
-        statement.execute("INSERT INTO CancelledFlights(flightId,cancelledDate) VALUES("+
-                flightId+",'" +date+
-                "')");
 
         String createNotificationTableSQL ="CREATE TABLE IF NOT EXISTS notifications (" +
                 "notificationId INTEGER NOT NULL UNIQUE," +
                 "notification TEXT," +
                 "username TEXT," +
+                "whenNotified datetime,"+
                 "PRIMARY KEY(notificationId AUTOINCREMENT)," +
                 "FOREIGN KEY (username) REFERENCES Users(username)" +
                 ");" ;
 
-        statement.execute(createTableSql);
+        statement.execute(createCancelledFlightsTableSql);
         statement.execute(createNotificationTableSQL);
-        /*
-        * select usernames from bookings .. where bookedForDate = date and flightId = flightId
-        * or tamam usernames ko notification table me dal kar is method se msg bhejna he
-        * */
-        statement.execute("SELECT bookedby FROM Bookings WHERE bookedForDate = '"+date+"' AND FlightId ='"+flightId+"' ");
+
+        //flightId and date of cancellation gets added to CancelledFlights table..
+        // advantage -> the user wont be able to see the flightId happens to exists in the cancellations table
+        statement.execute("INSERT INTO CancelledFlights(flightId,cancelledDate,whenCancelled) VALUES("+
+                flightId+",'" +date+
+                "',datetime('now'))");
+        //get the users who have booked flight-being-cancelled on date admin has given.
+        statement.execute("SELECT bookedBy FROM Bookings WHERE bookedForDate = '"+date+"' AND FlightId ='"+flightId+"' ");
         ResultSet resultSet = statement.getResultSet();
-
         ArrayList<String> usernames =  new ArrayList();
-
         while(resultSet.next()){
             usernames.add(resultSet.getString("bookedBy"));
         }
+
+        // send notification to users who had booked the cancelled flight
         for(String username: usernames){
-            statement.executeUpdate("INSERT INTO Notifications(username,notification) VALUES('" +
+            statement.executeUpdate("INSERT INTO Notifications(username,notification,whenNotified) VALUES('" +
                     username+"','"+notification+
-                    "')");
+                    "',datetime('now'))");
         }
+        //rows  bookings table gets deleted. where conditions get true
+        statement.execute("DELETE FROM Bookings WHERE flightId ="+flightId+" AND bookedForDate = '"+date+"';");
 
-        /*
-        * tamam usernames nikalo jinki bookings iss flightId me hain
-        * then unhen ye msg apki flightId XXX has been cancelled due to + reason
-        *
-        * */
-
-        /*UPDATE
-        agent1
-        SET commission=commission+.02
-        WHERE 2>=(
-        SELECT COUNT(cust_code) FROM customer
-        WHERE customer.agent_code=agent1.agent_code);*/
-
-        /*update notifications
-        * set notification = notification
-        * username=
-        * */
 
     }
 }

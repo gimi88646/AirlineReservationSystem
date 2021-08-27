@@ -18,7 +18,6 @@ public class Airline {
           connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
           statement = connection.createStatement();
           admin.setConnection(connection,statement);
-          admin.cancelFlight("111","2021-08-24","covid 19");
      }
      void login(String username, String password){
 //          String query = "SELECT username,password WHERE username=''"
@@ -50,7 +49,6 @@ public class Airline {
      void signUp(String username, String password,String fullName,String cnic,String contact,String address,String email,String gender,String dateOfBirth){
           //in sign up we will receive information from parameters and that information will then be stored in sql..
           //or and with that username and password information we will also execute users login method from this method..
-
           try {
                statement.execute("CREATE TABLE IF NOT EXISTS Users(username TEXT UNIQUE,password TEXT,fullName TEXT,cnic TEXT,contact TEXT,address TEXT,email TEXT,gender TEXT,dateOfBirth TEXT,whenAccountCreated TEXT,accountType TEXT)");
                statement.execute("INSERT INTO Users VALUES(" +
@@ -60,7 +58,6 @@ public class Airline {
           } catch (SQLException throwables) {
                throwables.printStackTrace();
           }
-
      }
 
      ResultSet getFlights(Date date, String to, String from,int numberOfPassengers,char seatType) throws SQLException {
@@ -93,7 +90,6 @@ public class Airline {
                int numberOfEorBseatTypes = flightsdata.get(i)[1];
                statement.execute("SELECT count(*) AS seatCount FROM Bookings WHERE flightId ='"+flightId+"' AND seatType='"+seatType+"' AND bookedForDate='"+strDate+"';");
                int seatCount = statement.getResultSet().getInt("seatCount");
-               System.out.println("seatcount = " + seatCount);
                if(seatCount+numberOfPassengers<=numberOfEorBseatTypes){
                     flightIds.add(flightId);
                }
@@ -108,15 +104,29 @@ public class Airline {
           //case: no flights exist? if count inside while loop doesn't get incremented return null.. then handle it in driver
      }
 
-     //this method gets called by admin
      ResultSet getFlights(String from,String to) throws SQLException{
+          //this method gets called by admin for route cancellation
+
+          // this method is for admin where he gets to see the flights that are not scheduled to be deleted.
           statement.execute("SELECT flightId,travelTo,travelFrom,takeOffTime FROM Flights WHERE travelFrom='"+from+"' AND travelTo='"+to+"' AND ActiveTill IS NULL;");
           return statement.getResultSet();
-//          boolean flightsFound = false;
-//          while(resultSet.next()){
-//               flightsFound=true;
-//          }
-//          if(!flightsFound) return null;
+     }
+
+     ResultSet getFlights(String from,String destination, String date) throws  SQLException{
+          /*
+          @ this method gets flights when admin wants to cancel a flight for a date
+          * flight id should not be present in the cancellation for the given date
+           */
+          String sql = "SELECT * From (SELECT * " +
+                  "FROM Flights " +
+                  "WHERE  NOT (flightId IN " +
+                  "(SELECT flightId " +
+                  "FROM CancelledFlights " +
+                  "WHERE   cancelledDate = '"+date+"')) ) WHERE travelFrom='"+from+"' AND travelTo='"+destination+"';";
+          statement.execute(sql);
+          // got the ids and make sure the ids not already exists in cancellation table
+          //get only those flightIds that are not present in cancellation table for the date provided
+          return statement.getResultSet();
      }
 
      ArrayList<String> getFroms() throws SQLException{

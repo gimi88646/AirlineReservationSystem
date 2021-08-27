@@ -162,6 +162,34 @@ public class Driver {
                         case 3: {
                             //cancel a flight
                             // the admin is supposed to enter a date and to-from , and on that specific date all the bookings of a to-from gets cancelled
+                            /* admin should see the flights whose active till column is null
+
+
+                            * */
+//                            airline.getFlights();
+
+                            String from = inputFrom(airline.getFroms());
+                            String destination = inputDestination(airline.getDestinations(from));
+                            String date = "2021-09-12";
+                            ResultSet resultSet = airline.getFlights(from,destination,date);
+//                            System.out.println(resultSet.wasNull() +" result set was null");
+
+                            String response =  showFlights(resultSet);
+                            if(response.equals("notFound")){
+                                System.out.println("No active route between "+destination+" and "+from+" on "+date+".");
+                            }else if(response.equals("goBack")){}
+                            else {
+                                System.out.print("Enter a message for passengers \n Message: ");
+                                input.nextLine();
+                                String message = input.nextLine();
+                                airline.admin.cancelFlight(response,date,message);
+//                                String mostRecentlyBookedDate=airline.admin.cancelRoute(response);
+//                                if(!(mostRecentlyBookedDate==null))
+//                                    System.out.println("\nFlight "+response+ " is only taking bookings till "+mostRecentlyBookedDate+".\n");
+//                                else System.out.println("\nFlight "+response+ " is no longer available.");
+                                System.out.println("The flight "+ response + " operation for date "+date+" have been cancelled!");
+                            }
+
                             break;
                         }
                         case 4: {
@@ -405,9 +433,9 @@ public class Driver {
 
     private static String showFlights(ResultSet resultSet) throws SQLException {
         boolean flightFound =false;
-        System.out.println("\nActive Flights from "+resultSet.getString("travelFrom")+" to "+resultSet.getString("travelTo")+"\n");
         ArrayList<String[]> flights = new ArrayList<>();
         while(resultSet.next()){
+            if(!flightFound) System.out.println("\nActive Flights from "+resultSet.getString("travelFrom")+" to "+resultSet.getString("travelTo")+"\n");
             flightFound=true;
             String[] flight = new String[2];
             flight[0]=resultSet.getString("flightId");

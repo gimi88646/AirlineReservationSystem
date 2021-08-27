@@ -27,3 +27,22 @@
 SELECT ProductName 
 FROM Products
 WHERE ProductID = ALL (SELECT ProductID FROM OrderDetails WHERE Quantity = 10);
+
+
+-- i got the fights that are operating on date 2021-08-24
+
+SELECT *
+FROM Flights 
+WHERE  NOT (flightId IN 
+       (SELECT flightId
+        FROM   CancelledFlights
+        WHERE   cancelledDate = '2021-08-24')) ;
+
+
+
+SELECT * From (SELECT *
+FROM Flights 
+WHERE  NOT (flightId IN 
+       (SELECT flightId
+        FROM   CancelledFlights
+        WHERE   cancelledDate = '2021-09-12')) ) WHERE travelTo='karachi' AND travelFrom='Lahore';
