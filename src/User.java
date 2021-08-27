@@ -22,12 +22,13 @@ public class User extends Person {
     // previous history
     User(String username) {
         super(username);
+
     }
 
     // if found it reassign the attributes of User Object and provide extra
     // functionality
     // extra functionality = history , view bookings, cancel bookings.
-
+    ArrayList<String> Updates = new ArrayList<String>();
     public void book(ArrayList<String[]> passengers, ArrayList bookingInfo) throws SQLException{
     //    date =bookinginfo[0]
     //     number of passegers = passengers.size
