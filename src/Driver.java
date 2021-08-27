@@ -444,7 +444,6 @@ public class Driver {
         }
         if (flightFound){
             //sout(headers)
-//            System.out.println("\tFlight ID\t\t|\tTime");
             System.out.println(String.format("%-4s","")+String.format("%-20s","Flight ID")+ String.format("%-20s","Time"));
             for(int i=0;i<flights.size();i++){
                 //sout(info) of each flight

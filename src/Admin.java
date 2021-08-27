@@ -70,7 +70,9 @@ public class Admin extends Person {
                 "flightId INTEGER," +
                 "cancelledDate date," +
                 "whenCancelled datetime,"+
+                "cancelledBy TEXT,"+
                 "PRIMARY KEY(cancellationId AUTOINCREMENT)," +
+                "FOREIGN KEY(cancelledBy) REFERENCES users(username),"+
                 "FOREIGN KEY(flightId) REFERENCES Flights(flightId)" +
                 ");";
 
@@ -88,8 +90,8 @@ public class Admin extends Person {
 
         //flightId and date of cancellation gets added to CancelledFlights table..
         // advantage -> the user wont be able to see the flightId happens to exists in the cancellations table
-        statement.execute("INSERT INTO CancelledFlights(flightId,cancelledDate,whenCancelled) VALUES("+
-                flightId+",'" +date+
+        statement.execute("INSERT INTO CancelledFlights(flightId,cancelledDate,cancelledBy,whenCancelled) VALUES("+
+                flightId+",'" +date+ "','"+username+
                 "',datetime('now'))");
         //get the users who have booked flight-being-cancelled on date admin has given.
         statement.execute("SELECT bookedBy FROM Bookings WHERE bookedForDate = '"+date+"' AND FlightId ='"+flightId+"' ");
