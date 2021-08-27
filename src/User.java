@@ -3,11 +3,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class User extends Person {
-
-    ArrayList<String[]> notifications = new ArrayList();
-
-
-
     // this attribute will be useful in Airline class because we will be able to check if user is a member
     // if is a member the program will provide the user extra functionality
     // extra functionality = history , view bookings, cancel bookings.
@@ -126,9 +121,24 @@ public class User extends Person {
                 "ORDER BY bookedForDate");
         return statement.getResultSet();
     }
-    private void getNotifications() throws SQLException{
-        /*this method runs query */
-//        return statement.getResultSet();
+    static ArrayList<String> notifications = new ArrayList();
+    void displaynotifications(){
+        for(int i=0; i<=notifications.size()-1; i++){
+            System.out.println("\n"+notifications.get(i)+"\n");
+        }
+    }
+    void getNotifications() throws SQLException{
+        String query = "SELECT notification FROM notifications WHERE username=" + "'"+username+"'";
+        statement.execute(query);
+        ResultSet rset = statement.getResultSet();
+        if(rset.next()){
+            while(rset.next()){
+                notifications.add(rset.getString("notification"));
+        }
+        }
+        else{notifications.add("No Updates!");}
+        displaynotifications();
+
     }
 }
 

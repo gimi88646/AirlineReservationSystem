@@ -74,29 +74,29 @@ public class Admin extends Person {
 //                "FOREGIN KEY flightId"+
 //                // some columns
 //                ");");
-        String createTableSql = "CREATE TABLE IF NOT EXISTS CancelledFlights (" +
-                "cancellationId INTEGER NOT NULL UNIQUE," +
-                "flightId INTEGER," +
-                "cancelledDate date," +
-                "PRIMARY KEY(cancellationId AUTOINCREMENT)," +
-                "FOREIGN KEY(flightId) REFERENCES Flights(flightId)" +
-                ");";
-        statement.execute(createTableSql);
+        // String createTableSql = "CREATE TABLE IF NOT EXISTS CancelledFlights (" +
+        //         "cancellationId INTEGER NOT NULL UNIQUE," +
+        //         "flightId INTEGER," +
+        //         "cancelledDate date," +"updatedby TEXT,"+
+        //         "PRIMARY KEY(cancellationId AUTOINCREMENT)," +
+        //         "FOREIGN KEY(flightId) REFERENCES Flights(flightId)" +
+        //         ");";
+        // statement.execute(createTableSql);
 
-        statement.execute("INSERT INTO CancelledFlights(flightId,cancelledDate) VALUES("+
+        statement.execute("INSERT INTO CancelledFlights(updatedby, flightId,cancelledDate) VALUES("+ username +","+
                 flightId+",'" +date+
                 "')");
 
-        String createNotificationTableSQL ="CREATE TABLE IF NOT EXISTS notifications (" +
-                "notificationId INTEGER NOT NULL UNIQUE," +
-                "notification TEXT," +
-                "username TEXT," +
-                "PRIMARY KEY(notificationId AUTOINCREMENT)," +
-                "FOREIGN KEY (username) REFERENCES Users(username)" +
-                ");" ;
+        // String createNotificationTableSQL ="CREATE TABLE IF NOT EXISTS notifications (" +
+        //         "notificationId INTEGER NOT NULL UNIQUE," +
+        //         "notification TEXT," +
+        //         "username TEXT," +
+        //         "PRIMARY KEY(notificationId AUTOINCREMENT)," +
+        //         "FOREIGN KEY (username) REFERENCES Users(username)" +
+        //         ");" ;
 
-        statement.execute(createTableSql);
-        statement.execute(createNotificationTableSQL);
+        // statement.execute(createTableSql);
+        // statement.execute(createNotificationTableSQL);
         /*
         * select usernames from bookings .. where bookedForDate = date and flightId = flightId
         * or tamam usernames ko notification table me dal kar is method se msg bhejna he
@@ -110,7 +110,7 @@ public class Admin extends Person {
             usernames.add(resultSet.getString("bookedBy"));
         }
         for(String username: usernames){
-            statement.executeUpdate("INSERT INTO Notifications(username,notification) VALUES('" +
+            statement.executeUpdate("INSERT INTO notifications(username,notification) VALUES('" +
                     username+"','"+notification+
                     "')");
         }
