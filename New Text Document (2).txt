@@ -1,0 +1,29 @@
+-- CREATE TABLE IF NOT EXISTS CancelledFlights  (
+-- 		"cancellatonId" INTEGER ,
+-- 		"flightId" INTEGER,
+-- 		"cancelledDate" date
+-- 		PRIMARY KEY(cancellatonId, AUTOINCREMENT)
+-- 		FOREIGN KEY("flightId") REFERENCES Flights(flightId)
+-- );
+
+-- CREATE TABLE 
+-- CREATE TABLE IF NOT EXISTS test(
+-- 	testId INT
+-- );\
+
+-- DROP TABLE IF EXISTS CancelledFlights ;
+-- 
+--  CREATE TABLE IF NOT EXISTS CancelledFlights (
+-- 	cancellationId INTEGER NOT NULL UNIQUE,
+--  	flightId INTEGER,
+--  	cancelledDate date,
+--  	PRIMARY KEY(cancellationId AUTOINCREMENT),
+-- 	FOREIGN KEY(flightId) REFERENCES Flights(flightId)
+-- );
+-- 
+-- INSERT INTO CancelledFlights(cancelledDate) VALUES (2021-06-21)
+
+
+SELECT ProductName 
+FROM Products
+WHERE ProductID = ALL (SELECT ProductID FROM OrderDetails WHERE Quantity = 10);
