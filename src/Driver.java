@@ -32,6 +32,8 @@ public class Driver {
             try {
                 if (airline.user.getSignedInStatus()) {
                     airline.user.getNotifications();
+                    for(int i=0; i<=airline.user.notifications.size()-1; i++){
+                        System.out.println("\n"+airline.user.notifications.get(i)+"\n");}
 
                     // how should i change the options if the user has performed sign in
                     // when user signs in and he is a regular user he should be able to see

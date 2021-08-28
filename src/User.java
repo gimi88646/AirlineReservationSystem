@@ -122,11 +122,8 @@ public class User extends Person {
         return statement.getResultSet();
     }
     static ArrayList<String> notifications = new ArrayList();
-    void displaynotifications(){
-        for(int i=0; i<=notifications.size()-1; i++){
-            System.out.println("\n"+notifications.get(i)+"\n");
-        }
-    }
+    
+        
     void getNotifications() throws SQLException{
         String query = "SELECT notification FROM notifications WHERE username=" + "'"+username+"'";
         statement.execute(query);
@@ -137,7 +134,6 @@ public class User extends Person {
         }
         }
         else{notifications.add("No Updates!");}
-        displaynotifications();
 
     }
 }
