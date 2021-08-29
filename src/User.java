@@ -83,6 +83,7 @@ public class User extends Person {
 //        for this module getBookings will be called first in Driver then the user is asked to input the booking he wants to cancel
 //        then that information is passed as parameter in this method and SQL gets in action .. not sure whether is should delete the booking or change the status to cancelled
 //        this method first calls getBookigs and and results get displayed by the driver class
+
         statement.execute("DELETE FROM Bookings WHERE BookingId="+bookingId+";");
     }
     public ResultSet getHistory() throws SQLException{

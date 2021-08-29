@@ -9,19 +9,19 @@ public abstract class Person {
     boolean isSignedIn=false;
     String name;
     String username;
-    Connection connection;
-    Statement statement;
+    protected  Connection connection;
+    protected  Statement statement;
 
 
-    {
-        try {
-             connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
-             statement = connection.createStatement();
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
+//    {
+//        try {
+//             connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
+//             statement = connection.createStatement();
+//
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
+//    }
 
 
 
@@ -50,7 +50,7 @@ public abstract class Person {
         return isSignedIn;
      }
 
-     void setConnection(Connection connection,Statement statement){
+      void setConnection(Connection connection,Statement statement){
         this.connection=connection;
         this.statement=statement;
      }

@@ -17,7 +17,10 @@ public class Airline {
      Airline() throws SQLException{
           connection = DriverManager.getConnection("jdbc:sqlite:AirlineDatabase.db");
           statement = connection.createStatement();
+
           admin.setConnection(connection,statement);
+          user.setConnection(connection,statement);
+
      }
      void login(String username, String password){
 //          String query = "SELECT username,password WHERE username=''"
