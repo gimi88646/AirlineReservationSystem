@@ -46,3 +46,13 @@ WHERE  NOT (flightId IN
        (SELECT flightId
         FROM   CancelledFlights
         WHERE   cancelledDate = '2021-09-12')) ) WHERE travelTo='karachi' AND travelFrom='Lahore';
+
+
+
+works fine as expected
+SELECT * 
+                  FROM Flights 
+                  WHERE  NOT (flightId IN 
+                  (SELECT flightId
+                   FROM CancelledFlights 
+                  WHERE cancelledDate = '2021-09-11'))

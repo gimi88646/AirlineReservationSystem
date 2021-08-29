@@ -170,7 +170,7 @@ public class Driver {
 
                             String from = inputFrom(airline.getFroms());
                             String destination = inputDestination(airline.getDestinations(from));
-                            String date = "2021-09-12";
+                            String date = "2021-09-11";
                             ResultSet resultSet = airline.getFlights(from,destination,date);
 //                            System.out.println(resultSet.wasNull() +" result set was null");
 
@@ -189,7 +189,6 @@ public class Driver {
 //                                else System.out.println("\nFlight "+response+ " is no longer available.");
                                 System.out.println("The flight "+ response + " operation for date "+date+" have been cancelled!");
                             }
-
                             break;
                         }
                         case 4: {
@@ -221,18 +220,28 @@ public class Driver {
 
                         // all the flight operations gets displayed
                         case 1: {
-//                            methods me se string return hogi.. ya flightId hogi ya goBack ho..
-//                            seeFlights();
-                            //me chah rha hu ke user ko flightid selection ke sath sath go back ka bhi option du.. jo ussy le jaega program ke start me
-//                            agar me ab user se input lu uski flight id ke according.. tou mujhe kese pata chale kese input sahi aya he
-//                            or agar input sahi aya bhi he tou user ko peeche wale menu me jane ka option hona chahiye!
-//                            agar fligts mili hi nahiii tou kyaa kare?
-                            // yahan phr flight id puchengyy..
-                            // uske baad phr arraylist banegi people ki...
-//                            jitny travellers hongy utni baar information dali jaegi... har individual's info ki arraylist append hogi people arraylist me
-//                            phr uske baad ke hoga.....
-//                            me keh rha hu ke
-//                                    airline.user.book(arraylist of people,);
+
+                            ArrayList bookingInfo = new ArrayList();
+
+                            String flight = seeFlights(bookingInfo);
+                            if(flight.equals("goBack")){
+                                break;
+                            }else if (flight.equals("notFound")){
+                                System.out.println("Sorry no Flights Available, Please choose another date. ");
+                                break;
+                            }
+                            else  {
+                                //start taking information.. iske liye method likhna chahiye kyuu user logedin me bhi yahii kam ho rha hoga
+                                //static take info method should be implemented... which returns Arraylist of string[] each string array represents a passenger
+                                ArrayList<String[]> passengers = takeInfoForPassengers((int)bookingInfo.get(1));
+                                if(passengers==null){
+                                    break;
+                                }else {
+                                    airline.user.book(passengers,bookingInfo);
+                                    System.out.println("Booked Successfully! ");
+                                }
+                            }
+                            //book ka method from user class
                             break;
                         }
 
@@ -485,6 +494,7 @@ public class Driver {
 
                 System.out.print("Enter Date of Departure (Date format: yyyy-MM-dd): ");
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(input.next());
+                System.out.println(date);
                 //i have to show to-froms separately if the user has already selected a from .. i should exclude that origin from the options
 //                ArrayList<String> origins = airline.getOperations(date,origin);
                 ArrayList<String> froms = airline.getFroms();

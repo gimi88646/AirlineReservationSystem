@@ -14,10 +14,12 @@ public class Admin extends Person {
 
     // implementation of methods that are displayed in driver class
     //this method takes to-from time.. number of passengers for a carrier as parameters
+
     public void addRoute() throws SQLException {
 
         statement.execute("INSERT INTO Flights(flightId,travelTo,travelFrom) VALUES('120','Lahore','Peshawar');");
     }
+
     public String cancelRoute(String flightId) throws SQLException{
         /*
         SELECT *
@@ -48,9 +50,14 @@ public class Admin extends Person {
 
 
     // admin wants to cancel a flight for a date..
-
     public void cancelFlight( String flightId,String date, String message) throws SQLException{
-        String notification = "Your Booking for Flight "+flightId+ " has been cancelled!\n " + message;
+        java.util.Date dt = new java.util.Date();
+
+        java.text.SimpleDateFormat sdf =
+                new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        String currentDateTime = sdf.format(dt);
+        String notification = "Your Booking for Flight "+flightId+ " has been cancelled! " + message;
         /*
         * when admin cancels a flight for a day..
         * it gets inserted to cancelled flights as date with
@@ -92,7 +99,7 @@ public class Admin extends Person {
         // advantage -> the user wont be able to see the flightId happens to exists in the cancellations table
         statement.execute("INSERT INTO CancelledFlights(flightId,cancelledDate,cancelledBy,whenCancelled) VALUES("+
                 flightId+",'" +date+ "','"+username+
-                "',datetime('now'))");
+                "','"+currentDateTime+"')");
         //get the users who have booked flight-being-cancelled on date admin has given.
         statement.execute("SELECT bookedBy FROM Bookings WHERE bookedForDate = '"+date+"' AND FlightId ='"+flightId+"' ");
         ResultSet resultSet = statement.getResultSet();
@@ -103,9 +110,9 @@ public class Admin extends Person {
 
         // send notification to users who had booked the cancelled flight
         for(String username: usernames){
-            statement.executeUpdate("INSERT INTO Notifications(username,notification,whenNotified) VALUES('" +
+            statement.execute("INSERT INTO Notifications(username,notification,whenNotified) VALUES('" +
                     username+"','"+notification+
-                    "',datetime('now'))");
+                    "','"+currentDateTime+"')");
         }
         //rows  bookings table gets deleted. where conditions get true
         statement.execute("DELETE FROM Bookings WHERE flightId ="+flightId+" AND bookedForDate = '"+date+"';");
