@@ -32,6 +32,20 @@ public class Driver {
                 if (airline.user.getSignedInStatus()) {
                     //how should i change the options if the user has performed sign in
                     //when user signs in and he is a regular user he should be able to see following options
+                    ArrayList<String[]> notifications = airline.user.getNotifications();
+                    if(notifications==null) System.out.println("No notifications!");
+                    else {
+                        // sout(headers)// datetime = XXXX-XX-XX HH:MM:SS
+//                        "asdad".substring()
+                        System.out.println(String.format("%-14s","Date")+String.format("%-14s","Time")+"Notification");
+                        for(int i=0; i<=notifications.size()-1; i++){
+                            String[] notification = notifications.get(i);
+                            String[] datetime = notification[1].split(" ");
+
+                            System.out.println(String.format("%-14s",datetime[0]) + String.format("%-14s",datetime[1])+notification[0]);
+                        }
+                    }
+
 
                     System.out.print(
                             "1. See Flights\n" +
@@ -53,10 +67,11 @@ public class Driver {
                             ArrayList bookingInfo = new ArrayList();
 
                             String flight = seeFlights(bookingInfo);
-                            if(flight.equals("goBack")){
-                                break;
-                            }else if (flight.equals("notFound")){
+                            if(flight.equals("notFound") ){
                                 System.out.println("Sorry no Flights Available, Please choose another date. ");
+                                break;
+                            }else if ( flight.equals("goBack")){
+
                                 break;
                             }
                             else  {
@@ -129,6 +144,30 @@ public class Driver {
                             // add a route
                             // the admin is supposed to enter a new flight and information relevant to the fight..
                             // and that information is inserted into the flights table in database
+                            System.out.print("Enter Flight ID: ");
+                            input.nextLine();
+                            String fid = input.nextLine();
+                            System.out.print("Enter Travel To: ");
+                            String trvto = input.nextLine();
+                            System.out.print("Enter travel From: ");
+                            String trvfrom = input.nextLine();
+                            System.out.print("Enter Number of Business Seats: ");
+                            String bseats = input.nextLine();
+                            System.out.print("Enter Number of Economy Seats: ");
+                            String eseats = input.nextLine();
+                            String time = inputTime();
+                            ArrayList<String> flightinfo = new ArrayList<String>();
+                            flightinfo.add(fid);
+                            flightinfo.add(trvto);
+                            flightinfo.add(trvfrom);
+                            flightinfo.add(bseats);
+                            flightinfo.add(eseats);
+                            flightinfo.add(time);
+                            try {
+                                airline.admin.addRoute(flightinfo);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                             break;
 
@@ -512,7 +551,9 @@ public class Driver {
                 char seatType = input.next().charAt(0);
 
                 if (!(seatType == 'B' || seatType == 'E')) throw new InputMismatchException("Please choose between B and E");
-                String flight = showFlights(airline.getFlights(date,destination,from,numberOfPessegers,seatType));
+                ResultSet resultSet = airline.getFlights(date,destination,from,numberOfPessegers,seatType);
+                if (resultSet==null) return "notFound";
+                String flight = showFlights(resultSet);
                 // ye boolean ki jagah string ho.. jisme ya flight ids ho yaa goBack ho
                 //phr yahii cheeez return karao jahan se method call hua he
                 bookingInfo.add(getStrDate(date));

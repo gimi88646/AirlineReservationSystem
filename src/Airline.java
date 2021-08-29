@@ -72,12 +72,20 @@ public class Airline {
           String strDate = dateFormat.format(date);  // 2021-12-12
 
 //          String sql = "SELECT flightId,numberOf"+seatType+"catSeats FROM Flights WHERE (activeTill>='"+strDate+"' OR activeTill IS NULL) AND travelFrom='"+from+"' AND travelTo='"+to+"';";
-          String sql = "SELECT * From (SELECT * " +
-                  "FROM Flights " +
-                  "WHERE  NOT (flightId IN " +
-                  "(SELECT flightId " +
-                  "FROM CancelledFlights " +
-                  "WHERE cancelledDate = '"+date+"'))) WHERE ( activeTill>='"+date+"' OR activeTill IS NUll) AND travelFrom='"+from+"' AND travelTo='"+to+"';";
+//          String sql = "SELECT * From (SELECT * " +
+//                  "FROM Flights " +
+//                  "WHERE  NOT (flightId IN " +
+//                  "(SELECT flightId " +
+//                  "FROM CancelledFlights " +
+//                  "WHERE cancelledDate = '"+date+"'))) WHERE ( activeTill>='"+date+"' OR activeTill IS NUll) AND travelFrom='"+from+"' AND travelTo='"+to+"';";
+          String sql ="SELECT * From (SELECT * " +
+                  "                  FROM Flights " +
+                  "                  WHERE  NOT (flightId IN " +
+                  "                  (SELECT flightId " +
+                  "                  FROM CancelledFlights " +
+                  "                  WHERE cancelledDate = '"+strDate+"'))) " +
+                  "  WHERE (( activeTill>='"+strDate+"' OR activeTill IS NUll)) " +
+                  "AND travelFrom='"+from+"' AND travelTo='"+to+"';";
           statement.execute(sql); // jab inactiveSince ka attribute add hoga tou mujhe iska date check rkhna parega k
          ResultSet flightsResultSet = statement.getResultSet();
 
@@ -85,7 +93,6 @@ public class Airline {
           while(flightsResultSet.next()){
                int[] flightdata = new int[2];
                flightdata[0] = flightsResultSet.getInt("flightId");  // error.. no such column 'flightId'
-               System.out.println(flightdata[0]+" = flight id");
                flightdata[1] = flightsResultSet.getInt("numberOf"+seatType+"catSeats");
                flightsdata.add(flightdata);
           }

@@ -15,9 +15,18 @@ public class Admin extends Person {
     // implementation of methods that are displayed in driver class
     //this method takes to-from time.. number of passengers for a carrier as parameters
 
-    public void addRoute() throws SQLException {
+    public void addRoute(ArrayList<String> flightinfo) throws Exception {
 
-        statement.execute("INSERT INTO Flights(flightId,travelTo,travelFrom) VALUES('120','Lahore','Peshawar');");
+        String query = "'" + flightinfo.get(0) + "'";
+
+        for (int i = 1; i <= flightinfo.size() - 1; i++) {
+            String infopiece = "," + "'" + flightinfo.get(i) + "'";
+            query += infopiece;
+
+        }
+        statement.execute(
+                "INSERT INTO Flights(flightId,travelTo,travelFrom,numberOfBcatSeats,numberOfEcatSeats,takeOffTime) VALUES("
+                        + query + ")");
     }
 
     public String cancelRoute(String flightId) throws SQLException{

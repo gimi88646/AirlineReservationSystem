@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class User extends Person {
 
-    ArrayList<String[]> notifications = new ArrayList();
-
+//    ArrayList<String[]> notifications = new ArrayList();
+    private ArrayList<String[]> notifications = new ArrayList();
 
 
     // this attribute will be useful in Airline class because we will be able to check if user is a member
@@ -93,15 +93,25 @@ public class User extends Person {
                 "ORDER BY bookedForDate");
         return statement.getResultSet();
     }
-    private void getNotifications() throws SQLException{
-        /*this method runs query */
-//        return statement.getResultSet();
+
+    private void populateNotifications() throws SQLException{
+        String query = "SELECT notification,whenNotified FROM notifications WHERE username=" + "'"+username+"' ORDER BY whenNotified LIMIT 5;";
+        statement.execute(query);
+        ResultSet rset = statement.getResultSet();
+        Boolean noticationsPresent=false;
+            while(rset.next()){
+                noticationsPresent=true;
+                String [] notification = new String[2];
+                notification[0] = rset.getString("notification");
+                notification[1] = rset.getString("whenNotified");
+                notifications.add(notification);
+            }
+            if(!noticationsPresent) notifications = null;
     }
+    ArrayList<String[]> getNotifications() throws SQLException{
+        populateNotifications();
+        return notifications;
+    }
+
 }
 
-
-/*
-* 101,wash WC, new york,eseats, bseats,time
-* 'wash DC'
-*'wash' 'DC'
-* */

@@ -13,7 +13,10 @@ public class testInput {
 
     public static void main(String[] args) {
 
-
+        String date111 = "2021-08-09 01:26:30";
+        String[] asd = date111.split(" ");
+        System.out.println(asd[0]+asd[1]);
+        System.out.println(String.format("%-20s","Date And Time")+"Notification");
 
         String time = Driver.inputTime();
         System.out.println(time);
