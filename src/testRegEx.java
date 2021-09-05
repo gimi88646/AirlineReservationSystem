@@ -1,6 +1,8 @@
+import java.lang.management.MemoryType;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Scanner;
@@ -8,8 +10,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class testRegEx {
+    static Scanner input = new Scanner(System.in);
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        try {
+//            inDate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        Scanner scanner = new Scanner(System.in);
 //        char c = (char) scanner.nextInt();
 //        System.out.println(c);
 //        try {
@@ -103,12 +111,42 @@ public class testRegEx {
 //            count++;
 //            System.out.println("Occurence" +tNotVmatcher.start()+" to "+ matcher.end());
 //        }
+
         String datee= "31-01-3000";
         String datePattern = "[0-2][0-9]|3[0-1]-(0[1-9]|1[0-2])-[0-9]{4}";
         Pattern DatePattern = Pattern.compile(datePattern);
         Matcher dateMatcher = DatePattern.matcher(datee);
         System.out.println("date pattern matches: "+dateMatcher.matches());
-
     }
 
+
+    public static String inputDate() throws ParseException {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE,30);
+        Date datePlus30 = cal.getTime();
+        while (true){
+            System.out.print("Date format should be DD-MM-YYYY\n" +
+                    "Enter Date: ");
+            String date = input.nextLine();
+            String dateRegex = "^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
+            Pattern datePattern = Pattern.compile(dateRegex);
+            Matcher dateMatcher = datePattern.matcher(date);
+            System.out.println("date matches: " + dateMatcher.matches());
+            if(dateMatcher.matches()){
+                Date dateIn = new SimpleDateFormat("dd-MM-yyyy").parse(date);
+                 try {
+                     System.out.println(dateIn.compareTo(new Date()));
+                     System.out.println(new Date());
+                     System.out.println(dateIn);
+                    if(dateIn.compareTo(new Date())<0) throw new InvalidDateException("The date you entered is already past");
+                    if(datePlus30.compareTo(dateIn)<0) throw new InvalidDateException("Sorry, The system takes bookings within 30 days only! ");
+                    return date;
+                 } catch (InvalidDateException e) {
+                     System.out.println(e.getMessage());
+                }
+            } else{
+                System.out.println("Invalid Date! ");
+            }
+        }
+    }
 }

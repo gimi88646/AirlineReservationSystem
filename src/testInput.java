@@ -1,4 +1,5 @@
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -11,7 +12,26 @@ public class testInput {
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 1988);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date dateRepresentation = cal.getTime();
+        System.out.println(dateRepresentation);
+        Calendar c= Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE,27);
+        System.out.println(c);
+        int d = c.get(Calendar.DATE);
+        System.out.println(d);
+        Date datenow = new Date();
+        System.out.println(datenow);
+        String strdate = "2021-05-14";
+        Date dateObj = new SimpleDateFormat("yyyy-MM-dd").parse(strdate);
+        System.out.println(dateObj);
+        System.out.println(datenow.compareTo(dateObj));
+
 
         String date111 = "2021-08-09 01:26:30";
         String[] asd = date111.split(" ");
