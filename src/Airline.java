@@ -120,10 +120,11 @@ public class Airline {
                System.out.println("Something went wrong: "+ queryFailed.getMessage());
           }
      }
+
      void signUp(ArrayList<String> userInfo) throws  SQLException{
           //in sign up we will receive information from parameters and that information will then be stored in sql..
           //or and with that username and password information we will also execute users login method from this method..
-          StringBuilder insertInfoSql = new StringBuilder("INSERT INTO Users() VALUES('");
+          StringBuilder insertInfoSql = new StringBuilder("INSERT INTO Users(fullName,username,password,cnic,contact,address,) VALUES('");
 
 
           for(int i=0;i<userInfo.size()-1;i++){

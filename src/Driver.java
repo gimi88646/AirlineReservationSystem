@@ -125,7 +125,7 @@ public class Driver {
                                     5. Log out
                                     6. Exit
                              
-                                                         // add a route       Please choose any of the above:\s"""
+                                    Please choose any of the above:\s"""
                     );
                     choice = input.nextInt();
                     if (choice > 5 || choice < 1) throw new InputOutOfBound("Make sure your input is correct");
@@ -286,9 +286,8 @@ public class Driver {
                         //Sign up information database me store hojaegi or wohii data user.login ke liye bhi use ki jaegiii
                         //jiska matlab hoga ke sign up hone ke baad wohii account sign in hoga
                         case 3: {
-
-                            // a check for username should be implemented
-                            //
+                                String[] signUpData = collectSignUp();
+                                airline.signUp(signUpData);
 
 //                            String cnic = input.next(); // a pattern should be declared
 //                            System.out.println("Email Address: "); // a pattern should be declared to avoid false emails
@@ -707,6 +706,7 @@ public class Driver {
             }
         }
     }
+
     private static String inputAddress(){
         Pattern addressPattern = Pattern.compile("\\w+(\\s\\w+){2,}");
         while (true){
@@ -741,48 +741,46 @@ public class Driver {
 
     }
 
-    private static void signUp(){
-        try {
-            System.out.print("Full Name: ");
-            String name=inputName();
-            String username =inputUsername();
-            String password =inputPassword();
-            String cnic = inputCnic();
-            String phone = inputPhone();
-            String address = inputAddress();
-            String gender = inputGender();
-//            String dob =
-
-        }catch (Exception ex){
-            System.out.println(ex.getMessage());
-        }
-    }
     private static String inputDob() throws ParseException {
         String dateRegex = "^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
         Pattern datePattern = Pattern.compile(dateRegex);
-        Calendar cal = Calendar.getInstance();
-//        cal.setTime();
-//        cal.add(Calendar.YEAR,-18);
-        Date dateMinus18years = cal.getTime();
+        Calendar birthCalendar = Calendar.getInstance();
         while (true){
             try {
                 System.out.print("Date format should be DD-MM-YYYY\n" +
                         "Date of Birth: ");
-                String dob =input.nextLine();
+                String dob =input.next();
                 Matcher matcher = datePattern.matcher(dob);
-                if(matcher.matches()) throw  new InvalidDateException();
-                Date date = new SimpleDateFormat("dd-MM-yyyy").parse(dob);
-                // date.compareTo(dateMinus18years)
-                // adding 18 years to the dob..
-                //if date gets greater than today throw error
-
-                break;
-            }catch (InvalidDateException ide){
-                System.out.println("Please enter a valid date!");
+                if(!matcher.matches()) throw  new InvalidDateException("Please enter a valid date!");
+                birthCalendar.setTime(new SimpleDateFormat("dd-MM-yyyy").parse(dob));
+                birthCalendar.add(Calendar.YEAR,18);
+                Date dateOfBirth = birthCalendar.getTime();
+                if(dateOfBirth.compareTo(new Date())>0) throw new InvalidDateException("You must be at least 18 years old");
+                return getStrDate(dateOfBirth);
+            }catch(InvalidDateException ide){
+                System.out.println(ide.getMessage());
             }
-
         }
-        return null;
     }
+
+    private static String[] collectSignUp(){
+        String[] signUpData = new String[8];
+        try {
+            signUpData[0] = inputName();
+            signUpData[1] = inputUsername();
+            signUpData[2] = inputPassword();
+            signUpData[3] = inputCnic();
+            signUpData[4] = inputPhone();
+            signUpData[5] = inputAddress();
+            signUpData[6] = inputGender();
+            signUpData[7] = inputDob();
+
+        }catch (Exception ex){
+            System.out.println(ex.getMessage());
+            return null;
+        }
+        return signUpData;
+    }
+
 }
 

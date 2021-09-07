@@ -14,6 +14,11 @@ public class testInput {
 
     public static void main(String[] args) throws ParseException {
 
+        while (true){
+            String dob = inputDob();
+          if (1==2)break;
+
+        }
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.YEAR,-30);
         Date datePlus30 = cal.getTime();
@@ -243,5 +248,33 @@ and must include at least one upper case letter, one lower case letter, and one 
         System.out.println(args[1]);
         System.out.println(args[0]);
     }
+    public static String getStrDate(Date date){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String strDate = dateFormat.format(date);  // 2021-12-12
+        return strDate;
+    }
+
+    private static String inputDob() throws ParseException {
+        String dateRegex = "^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
+        Pattern datePattern = Pattern.compile(dateRegex);
+        Calendar birthCalendar = Calendar.getInstance();
+        while (true){
+            try {
+                System.out.print("Date format should be DD-MM-YYYY\n" +
+                        "Date of Birth: ");
+                String dob =input.next();
+                Matcher matcher = datePattern.matcher(dob);
+                if(!matcher.matches()) throw  new InvalidDateException("Please enter a valid date!");
+                birthCalendar.setTime(new SimpleDateFormat("dd-MM-yyyy").parse(dob));
+                birthCalendar.add(Calendar.YEAR,18);
+                Date dateOfBirth = birthCalendar.getTime();
+                if(dateOfBirth.compareTo(new Date())>0) throw new InvalidDateException("You must be at least 18 years old");
+                return getStrDate(dateOfBirth);
+            }catch(InvalidDateException ide){
+                System.out.println(ide.getMessage());
+            }
+        }
+    }
+
 
 }
