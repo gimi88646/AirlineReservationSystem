@@ -121,27 +121,14 @@ public class Airline {
           }
      }
 
-     void signUp(ArrayList<String> userInfo) throws  SQLException{
-          //in sign up we will receive information from parameters and that information will then be stored in sql..
-          //or and with that username and password information we will also execute users login method from this method..
-          StringBuilder insertInfoSql = new StringBuilder("INSERT INTO Users(fullName,username,password,cnic,contact,address,) VALUES('");
-
-
-          for(int i=0;i<userInfo.size()-1;i++){
-               insertInfoSql.append(userInfo.get(i)).append("','");
+     void signUp(String[] userInfo) throws  SQLException{
+          StringBuilder insertInfoSql = new StringBuilder("INSERT INTO Users(fullName,username,password,cnic,contact,address,gender) VALUES('");
+          for(int i=0;i<userInfo.length-1;i++){
+               insertInfoSql.append(userInfo[i]).append("','");
           }
-          insertInfoSql.append(userInfo.get(userInfo.size()-1)).append("',datetime('now'),'regular');");
+          insertInfoSql.append(userInfo[userInfo.length-1]).append("',datetime('now'),'regular');");
           statement.execute(insertInfoSql.toString());
-//
-//          last dob
-//          then datetime now
-//          accountType regular
-//
-//               statement.execute("INSERT INTO Users VALUES('" +
-//                       username+"','"+password+"','"+fullName+"','"+cnic+"','"+contact+"','"+address+"','"+email+"','"+gender+"','"+dateOfBirth+"',datetime('now')"+",'regular'"+
-//                       ")");
-
-               login(userInfo.get(0),userInfo.get(1));
+          login(userInfo[1],userInfo[2]);
      }
 
      ResultSet getFlights(Date date, String to, String from,int numberOfPassengers,char seatType) throws SQLException {

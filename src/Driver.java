@@ -121,9 +121,8 @@ public class Driver {
                                     1. Add a route
                                     2. Cancel a route
                                     3. Cancel a flight
-                                    4. Cancel Booking
-                                    5. Log out
-                                    6. Exit
+                                    4. Log out
+                                    5. Exit
                              
                                     Please choose any of the above:\s"""
                     );
@@ -288,18 +287,6 @@ public class Driver {
                         case 3: {
                                 String[] signUpData = collectSignUp();
                                 airline.signUp(signUpData);
-
-//                            String cnic = input.next(); // a pattern should be declared
-//                            System.out.println("Email Address: "); // a pattern should be declared to avoid false emails
-//                            String email = input.next();
-                            // date of birth
-                            // phone number
-                            // address
-                            // select a username
-                            // password
-                            // once user sign up krleta he ... tou ussi data ki help se hum uska login karengy
-                            // or program ko extra functionality ke ke sath continue karengy..
-                            //airline.signUp();
                             break;
                         }
                         //End Program
@@ -764,7 +751,7 @@ public class Driver {
     }
 
     private static String[] collectSignUp(){
-        String[] signUpData = new String[8];
+        String[] signUpData = new String[9];
         try {
             signUpData[0] = inputName();
             signUpData[1] = inputUsername();
@@ -774,6 +761,7 @@ public class Driver {
             signUpData[5] = inputAddress();
             signUpData[6] = inputGender();
             signUpData[7] = inputDob();
+            signUpData[8] = inputEmail();
 
         }catch (Exception ex){
             System.out.println(ex.getMessage());
@@ -782,5 +770,20 @@ public class Driver {
         return signUpData;
     }
 
+    private static String inputEmail(){
+        Pattern emailPattern = Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$");
+        while(true){
+            try{
+                System.out.print("email: ");
+                String email = input.nextLine();
+                Matcher matcher = emailPattern.matcher(email);
+                if(!matcher.matches()) throw new Exception("Email not valid, re-enter a valid one!");
+                return email;
+            }
+            catch (Exception ex){
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
 }
 
