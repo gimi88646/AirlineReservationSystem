@@ -67,42 +67,6 @@ public class Admin extends Person {
 
         String currentDateTime = sdf.format(dt);
         String notification = "Your Booking for Flight "+flightId+ " has been cancelled! " + message;
-        /*
-        * when admin cancels a flight for a day..
-        * it gets inserted to cancelled flights as date with
-        * and the user should not be able to see that flight if the flight is in cancellation table, for that date..  */
-        /*
-        * if flight already has some bookings from this method we will notify the user that his booking for a flight has been cancelled...
-        *
-        * */
-//        statement.execute("CREATE TABLE IF NOT EXISTS CancelledFlights(" +
-//                "flightID INTEGER," +
-//                        "cancelledDate date" +
-//                "FOREGIN KEY flightId"+
-//                // some columns
-//                ");");
-        String createCancelledFlightsTableSql = "CREATE TABLE IF NOT EXISTS CancelledFlights (" +
-                "cancellationId INTEGER NOT NULL UNIQUE," +
-                "flightId INTEGER," +
-                "cancelledDate date," +
-                "whenCancelled datetime,"+
-                "cancelledBy TEXT,"+
-                "PRIMARY KEY(cancellationId AUTOINCREMENT)," +
-                "FOREIGN KEY(cancelledBy) REFERENCES users(username),"+
-                "FOREIGN KEY(flightId) REFERENCES Flights(flightId)" +
-                ");";
-
-        String createNotificationTableSQL ="CREATE TABLE IF NOT EXISTS notifications (" +
-                "notificationId INTEGER NOT NULL UNIQUE," +
-                "notification TEXT," +
-                "username TEXT," +
-                "whenNotified datetime,"+
-                "PRIMARY KEY(notificationId AUTOINCREMENT)," +
-                "FOREIGN KEY (username) REFERENCES Users(username)" +
-                ");" ;
-
-        statement.execute(createCancelledFlightsTableSql);
-        statement.execute(createNotificationTableSQL);
 
         //flightId and date of cancellation gets added to CancelledFlights table..
         // advantage -> the user wont be able to see the flightId happens to exists in the cancellations table

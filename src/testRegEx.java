@@ -12,11 +12,7 @@ import java.util.regex.Pattern;
 public class testRegEx {
     static Scanner input = new Scanner(System.in);
     public static void main(String[] args) {
-        try {
-//            inDate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 //        Scanner scanner = new Scanner(System.in);
 //        char c = (char) scanner.nextInt();
 //        System.out.println(c);

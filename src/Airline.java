@@ -1,9 +1,7 @@
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 public class Airline {
@@ -20,6 +18,79 @@ public class Airline {
 
           admin.setConnection(connection,statement);
           user.setConnection(connection,statement);
+
+          //DATABASE TABLES creation
+          {
+               String createFlightsTableSql="CREATE TABLE Flight (" +
+                       "flightId INTEGER," +
+                       "travelTo TEXT," +
+                       "travelFrom TEXT," +
+                       "numberOfBcatSeats INTEGER," +
+                       "numberOfEcatSeats INTEGER," +
+                       "takeOffTime time," +
+                       "activeTill date," +
+                       "PRIMARY KEY(flightId)" +
+                       ");";
+
+               String createUsersTableSql ="CREATE TABLE IF NOT EXISTS Users (" +
+                       "username TEXT UNIQUE," +
+                       "password TEXT," +
+                       "fullName TEXT," +
+                       "cnic TEXT," +
+                       "contact TEXT," +
+                       "address TEXT," +
+                       "email TEXT," +
+                       "gender TEXT," +
+                       "dateOfBirth date," +
+                       "whenAccountCreated datetime," +
+                       "userType TEXT," +
+                       "PRIMARY KEY(username)" +
+                       ");";
+               String createBookingsTableSql = "CREATE TABLE BOOKINGS (" +
+                       "bookingID INTEGER," +
+                       "flightId INTEGER," +
+                       "bookedOnDate date," +
+                       "bookedForDate date," +
+                       "bookedBy TEXT," +
+                       "fullName TEXT," +
+                       "cnic INTEGER," +
+                       "seatType TEXT," +
+                       "PRIMARY KEY(bookingID AUTOINCREMENT)," +
+                       "FOREIGN KEY(flightId) REFERENCES Flights(flightId)" +
+                       ");";
+
+               //make sure the tables that the foreign key refers, exists before adding a foreign key
+               String createCancelledFlightsTableSql = "CREATE TABLE IF NOT EXISTS CancelledFlights (" +
+                       "cancellationId INTEGER NOT NULL UNIQUE," +
+                       "flightId INTEGER," +
+                       "cancelledDate date," +
+                       "whenCancelled datetime,"+
+                       "cancelledBy TEXT,"+
+                       "PRIMARY KEY(cancellationId AUTOINCREMENT)," +
+                       "FOREIGN KEY(cancelledBy) REFERENCES users(username),"+
+                       "FOREIGN KEY(flightId) REFERENCES Flights(flightId)" +
+                       ");";
+
+               String createNotificationTableSQL ="CREATE TABLE IF NOT EXISTS notifications (" +
+                       "notificationId INTEGER NOT NULL UNIQUE," +
+                       "notification TEXT," +
+                       "username TEXT," +
+                       "whenNotified datetime,"+
+                       "PRIMARY KEY(notificationId AUTOINCREMENT)," +
+                       "FOREIGN KEY (username) REFERENCES Users(username)" +
+                       ");";
+
+               statement.execute(createFlightsTableSql);
+               statement.execute(createUsersTableSql);
+               statement.execute(createCancelledFlightsTableSql);
+               statement.execute(createNotificationTableSQL);
+               statement.execute(createBookingsTableSql);
+
+          }
+
+          //check which active till is < dateNow and remove it
+          statement.execute("DELETE FROM Flights WHERE activeTill<date('now')");
+
 
      }
      void login(String username, String password){
@@ -49,18 +120,27 @@ public class Airline {
                System.out.println("Something went wrong: "+ queryFailed.getMessage());
           }
      }
-     void signUp(String username, String password,String fullName,String cnic,String contact,String address,String email,String gender,String dateOfBirth){
+     void signUp(ArrayList<String> userInfo) throws  SQLException{
           //in sign up we will receive information from parameters and that information will then be stored in sql..
           //or and with that username and password information we will also execute users login method from this method..
-          try {
-               statement.execute("CREATE TABLE IF NOT EXISTS Users(username TEXT UNIQUE,password TEXT,fullName TEXT,cnic TEXT,contact TEXT,address TEXT,email TEXT,gender TEXT,dateOfBirth date,whenAccountCreated datetime,accountType TEXT)");
-               statement.execute("INSERT INTO Users VALUES(" +
-                       username+","+password+","+fullName+","+cnic+","+contact+","+address+","+email+","+gender+","+dateOfBirth+"datetime('now')"+"regular"+
-                       ")");
-               login(username,password);
-          } catch (SQLException throwables) {
-               throwables.printStackTrace();
+          StringBuilder insertInfoSql = new StringBuilder("INSERT INTO Users() VALUES('");
+
+
+          for(int i=0;i<userInfo.size()-1;i++){
+               insertInfoSql.append(userInfo.get(i)).append("','");
           }
+          insertInfoSql.append(userInfo.get(userInfo.size()-1)).append("',datetime('now'),'regular');");
+          statement.execute(insertInfoSql.toString());
+//
+//          last dob
+//          then datetime now
+//          accountType regular
+//
+//               statement.execute("INSERT INTO Users VALUES('" +
+//                       username+"','"+password+"','"+fullName+"','"+cnic+"','"+contact+"','"+address+"','"+email+"','"+gender+"','"+dateOfBirth+"',datetime('now')"+",'regular'"+
+//                       ")");
+
+               login(userInfo.get(0),userInfo.get(1));
      }
 
      ResultSet getFlights(Date date, String to, String from,int numberOfPassengers,char seatType) throws SQLException {
@@ -72,15 +152,7 @@ public class Airline {
           // jo jo flighs to from match krta ho... date<=activeFill ...
           // uss flightId ke liye ye wali date cancellation table me nahiii honi chahiye
 
-          String strDate = dateFormat.format(date);  // 2021-12-12
-
-//          String sql = "SELECT flightId,numberOf"+seatType+"catSeats FROM Flights WHERE (activeTill>='"+strDate+"' OR activeTill IS NULL) AND travelFrom='"+from+"' AND travelTo='"+to+"';";
-//          String sql = "SELECT * From (SELECT * " +
-//                  "FROM Flights " +
-//                  "WHERE  NOT (flightId IN " +
-//                  "(SELECT flightId " +
-//                  "FROM CancelledFlights " +
-//                  "WHERE cancelledDate = '"+date+"'))) WHERE ( activeTill>='"+date+"' OR activeTill IS NUll) AND travelFrom='"+from+"' AND travelTo='"+to+"';";
+          String strDate = dateFormat.format(date);
           String sql ="SELECT * From (SELECT * " +
                   "                  FROM Flights " +
                   "                  WHERE  NOT (flightId IN " +
@@ -90,30 +162,30 @@ public class Airline {
                   "  WHERE (( activeTill>='"+strDate+"' OR activeTill IS NUll)) " +
                   "AND travelFrom='"+from+"' AND travelTo='"+to+"';";
           statement.execute(sql); // jab inactiveSince ka attribute add hoga tou mujhe iska date check rkhna parega k
-         ResultSet flightsResultSet = statement.getResultSet();
+          ResultSet flightsResultSet = statement.getResultSet();
 
-          ArrayList<int[]> flightsdata = new ArrayList();
+          ArrayList<int[]> flightsData = new ArrayList();
           while(flightsResultSet.next()){
                int[] flightdata = new int[2];
                flightdata[0] = flightsResultSet.getInt("flightId");  // error.. no such column 'flightId'
                flightdata[1] = flightsResultSet.getInt("numberOf"+seatType+"catSeats");
-               flightsdata.add(flightdata);
+               flightsData.add(flightdata);
           }
-          if(flightsdata.size()==0) return null;
+          if(flightsData.size()==0) return null;
           //this is the case when resultset has some data....   flightsDate.size()==0 means no data
           ArrayList<Integer> flightIds = new ArrayList<>();
-          for(int i=0;i<flightsdata.size();i++){
-               int flightId = flightsdata.get(i)[0];
-               int numberOfEorBseatTypes = flightsdata.get(i)[1];
-               statement.execute("SELECT count(*) AS seatCount FROM Bookings WHERE flightId ='"+flightId+"' AND seatType='"+seatType+"' AND bookedForDate='"+strDate+"';");
+          for (int[] flightData : flightsData) {
+               int flightId = flightData[0];
+               int numberOfEorBseatTypes = flightData[1];
+               statement.execute("SELECT count(*) AS seatCount FROM Bookings WHERE flightId ='" + flightId + "' AND seatType='" + seatType + "' AND bookedForDate='" + strDate + "';");
                int seatCount = statement.getResultSet().getInt("seatCount");
-               if(seatCount+numberOfPassengers<=numberOfEorBseatTypes){
+               if (seatCount + numberOfPassengers <= numberOfEorBseatTypes) {
                     flightIds.add(flightId);
                }
           }
-          String query = "flightId="+flightIds.get(0);
+          StringBuilder query = new StringBuilder("flightId=" + flightIds.get(0));
           for (int i=1;i<flightIds.size();i++){
-               query+=" OR flightId="+flightIds.get(i);
+               query.append(" OR flightId=").append(flightIds.get(i));
           }
 
           statement.execute("SELECT * FROM Flights WHERE "+query+";");
@@ -128,7 +200,6 @@ public class Airline {
           statement.execute("SELECT flightId,travelTo,travelFrom,takeOffTime FROM Flights WHERE travelFrom='"+from+"' AND travelTo='"+to+"' AND ActiveTill IS NULL;");
           return statement.getResultSet();
      }
-
      ResultSet getFlights(String from,String destination, String date) throws  SQLException{
           /*
           @ this method gets flights when admin wants to cancel a flight for a date
@@ -163,26 +234,14 @@ public class Airline {
           }
           return destinations;
      }
+     boolean isUsernameAvailable(String username) throws SQLException{
+          /**
+           * method returns true if username is not present in the database table
+           */
+          statement.execute("SELECT username FROM Users WHERE username='"+username+"');");
+          ResultSet resultSet = statement.getResultSet();
+          return !resultSet.next();
+     }
 }
 
 
-/**
- * CREATE TABLE BOOKINGS IF NOT EXISTS(
- * bookingID INT NOT NULL,
- * flightId INT NOT NULL,
- * bookedOnDate datetime NOT NULL,
- * bookedForDate date NOT NULL,
- * bookedBy TEXT NOT NULL,
- * fullName TEXT NOT NULL,
- * cnic TEXT NOT NULL,
- * PRIMARY KEY(bookingID),
- * FOREIGN KEY(flightId) REFERENCES Flights(flightId)
- * );
-  */
-//SELECT * FROM BOOKINGS WHERE bookedForDate<'2021-08-22';
-//SELECT count(*) FROM BOOKINGS WHERE bookedForDate>'2021-08-22 and flightID = 'flightID of a specified to-from';
-
-
-
-//flight id  ki number of bookings us specific category ke liye count karo, or dekho ke number of passengers add krne por wo exceed tou nahi ho rhi...
-//agar exceed nahi ho rhi tou wo flight show karwao ...

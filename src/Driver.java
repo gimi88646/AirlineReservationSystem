@@ -1,3 +1,4 @@
+import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
 import java.sql.SQLOutput;
 import java.text.DateFormat;
@@ -15,8 +16,6 @@ public class Driver {
 
     public static void main(String[] args) {
 
-        // see flights
-        // login
         int choice;
         try {
             airline = new Airline();
@@ -24,35 +23,22 @@ public class Driver {
             System.out.println(throwables);
             System.out.println("Something really went wrong");
         }
-//        String c =inputCnic();
         do {
             try {
                 if (airline.user.getSignedInStatus()) {
                     //how should i change the options if the user has performed sign in
                     //when user signs in and he is a regular user he should be able to see following options
-                    ArrayList<String[]> notifications = airline.user.getNotifications();
-                    if(notifications==null) System.out.println("No notifications!");
-                    else {
-                        // sout(headers)// datetime = XXXX-XX-XX HH:MM:SS
-//                        "asdad".substring()
-                        System.out.println(String.format("%-14s","Date")+String.format("%-14s","Time")+"Notification");
-                        for(int i=0; i<=notifications.size()-1; i++){
-                            String[] notification = notifications.get(i);
-                            String[] datetime = notification[1].split(" ");
-
-                            System.out.println(String.format("%-14s",datetime[0]) + String.format("%-14s",datetime[1])+notification[0]);
-                        }
-                    }
-
 
                     System.out.print(
-                            "1. See Flights\n" +
-                            "2. View Bookings\n" +
-                            "3. Cancel Booking\n" +
-                            "4. View History\n" +
-                            "5. Log out\n" +
-                            "6. Exit\n" +
-                            "Please choose any of the above: "
+                            """
+                                    1. See Flights
+                                    2. View Notifications
+                                    3. View Bookings
+                                    4. Cancel Booking
+                                    5. View History
+                                    6. Log out
+                                    7. Exit
+                                    Please choose any of the above:\s"""
                     );
                     choice = input.nextInt();
                     if (choice > 6 || choice < 1)
@@ -64,49 +50,52 @@ public class Driver {
                             // that booking actually invokes airline.user.book()
                             ArrayList bookingInfo = new ArrayList();
 
-                            String flight = seeFlights(bookingInfo);
-                            if(flight.equals("notFound") ){
+                            String response = seeFlights(bookingInfo);
+                            if(response.equals("notFound") ){
                                 System.out.println("Sorry no Flights Available, Please choose another date. ");
-                                break;
-                            }else if ( flight.equals("goBack")){
+                            }else if ( response.equals("goBack")){}
 
-                                break;
-                            }
+                            // else is the case when flightId is returned as response..
                             else  {
                                 //start taking information.. iske liye method likhna chahiye kyuu user logedin me bhi yahii kam ho rha hoga
                                 //static take info method should be implemented... which returns Arraylist of string[] each string array represents a passenger
                                 ArrayList<String[]> passengers = takeInfoForPassengers((int)bookingInfo.get(1));
-                                if(passengers==null){
-                                    break;
-                                }else {
+                                if(passengers!=null){
                                     airline.user.book(passengers,bookingInfo);
                                     System.out.println("Booked Successfully! ");
                                 }
                             }
-                            //book ka method from user class
                             break;
                         }
-                        case 2: {
-                            //view Bookings
-                            //the user should be able to see his bookings(this query will use username and date>=today )..
-                            // this part should display the user of bookings of today and days forward
-                            // for this the date of the system should be taken
-                            // there should be query that compares the dates in sql with the current time and returns resultSet
-                            // containing elements greater than or equals to the date of the system
+                        case 2:{
+                            // view notifications....
+                            ArrayList<String[]> notifications = airline.user.getNotifications();
+                            if(notifications==null) System.out.println("No notifications!");
+                            else {
+                                // sout(headers)// datetime = XXXX-XX-XX HH:MM:SS
+                                System.out.println(String.format("%-14s","Date")+String.format("%-14s","Time")+"Notification");
+                                for(int i=0; i<=notifications.size()-1; i++){
+                                    String[] notification = notifications.get(i);
+                                    String[] datetime = notification[1].split(" ");
+
+                                    System.out.println(String.format("%-14s",datetime[0]) + String.format("%-14s",datetime[1])+notification[0]);
+                                }
+                            }
+
+                            break;
+                        }
+
+                        case 3: {
                             ResultSet bookings = airline.user.getBookings();
                             displayBookings(bookings,false);
                             break;
                         }
-                        case 3: {
-                            // Cancel Booking
-                            // this method should be implemented in user class, in user gets to to choose among his bookings and cancel that booking
-                            // airline.user.cancelBooking() gets invoked
+                        case 4: {
                             String bookingId = displayBookings(airline.user.getBookings(),true);
-                            System.out.println("BookingId = "+bookingId);
                             airline.user.cancelBooking(bookingId);
                             break;
                         }
-                        case 4: {
+                        case 5: {
                             // view History
                             // the method should be in user class class.. and calling of method should be like airline.user.viewHistory
                             // the user gets to see the bookings...bookedBy "username" and date<now
@@ -115,31 +104,34 @@ public class Driver {
                             displayBookings(airline.user.getHistory(),false);
                             break;
                         }
-                        case 5: {
+                        case 6: {
                             //logout ...airline class me
                             airline.user.logOut();
                             break;
                         }
-                        case 6: {
+                        case 7: {
                             System.exit(0);
                         }
                     }
                 }
                 else if (airline.admin.getSignedInStatus()) {
                     //if the user is an admin he should be able to following options
-                    System.out.println(
-                            "1. Add a route\n" +
-                            "2. Cancel a route\n" +
-                            "3. Cancel a flight\n" +
-                            "4. Log Out\n" +
-                            "5. Exit"
+                    System.out.print(
+                            """
+                                    1. Add a route
+                                    2. Cancel a route
+                                    3. Cancel a flight
+                                    4. Cancel Booking
+                                    5. Log out
+                                    6. Exit
+                             
+                                                         // add a route       Please choose any of the above:\s"""
                     );
                     choice = input.nextInt();
                     if (choice > 5 || choice < 1) throw new InputOutOfBound("Make sure your input is correct");
 
                     switch (choice) {
                         case 1: {
-                            // add a route
                             // the admin is supposed to enter a new flight and information relevant to the fight..
                             // and that information is inserted into the flights table in database
                             System.out.print("Enter Flight ID: ");
@@ -207,9 +199,8 @@ public class Driver {
 
                             String from = inputFrom(airline.getFroms());
                             String destination = inputDestination(airline.getDestinations(from));
-                            String date = "2021-09-11";
+                            String date = inputDate();
                             ResultSet resultSet = airline.getFlights(from,destination,date);
-//                            System.out.println(resultSet.wasNull() +" result set was null");
 
                             String response =  showFlights(resultSet);
                             if(response.equals("notFound")){
@@ -295,9 +286,9 @@ public class Driver {
                         //Sign up information database me store hojaegi or wohii data user.login ke liye bhi use ki jaegiii
                         //jiska matlab hoga ke sign up hone ke baad wohii account sign in hoga
                         case 3: {
-                            System.out.println("your Full Name: ");
-                            String name = "";
-                            name += input.nextLine().replace("\n", "");
+
+                            // a check for username should be implemented
+                            //
 
 //                            String cnic = input.next(); // a pattern should be declared
 //                            System.out.println("Email Address: "); // a pattern should be declared to avoid false emails
@@ -325,9 +316,12 @@ public class Driver {
                 input.nextLine();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
         } while (true);
     }
+
 
     public static String displayBookings(ResultSet resultSet,boolean wantsToCancelBooking) throws SQLException{
         // this method can print bookings that are history, as well as bookings that are not yet past
@@ -521,19 +515,12 @@ public class Driver {
 
     private static String seeFlights(ArrayList bookingInfo) {
 
-//        mujhe chahiye
-//        flight id
-//        seattype
-//                number of passengers
-//                date
         while (true) {
             try {
 
                 System.out.print("Enter Date of Departure (Date format: yyyy-MM-dd): ");
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(input.next());
                 System.out.println(date);
-                //i have to show to-froms separately if the user has already selected a from .. i should exclude that origin from the options
-//                ArrayList<String> origins = airline.getOperations(date,origin);
                 ArrayList<String> froms = airline.getFroms();
                 String from = inputFrom(froms);
 
@@ -541,7 +528,7 @@ public class Driver {
                 String destination = inputDestination(destinations);
 
                 System.out.print("How many passengers? ");
-                int numberOfPessegers = input.nextInt(); // this number of passengers will be used for comparing with the count of booked flights in database
+                int numberOfPassengers = input.nextInt(); // this number of passengers will be used for comparing with the count of booked flights in database
                 System.out.print("Enter Type \n" +
                         "B for Business\n" +
                         "E for Economy\n" +
@@ -549,13 +536,13 @@ public class Driver {
                 char seatType = input.next().charAt(0);
 
                 if (!(seatType == 'B' || seatType == 'E')) throw new InputMismatchException("Please choose between B and E");
-                ResultSet resultSet = airline.getFlights(date,destination,from,numberOfPessegers,seatType);
+                ResultSet resultSet = airline.getFlights(date,destination,from,numberOfPassengers,seatType);
                 if (resultSet==null) return "notFound";
                 String flight = showFlights(resultSet);
                 // ye boolean ki jagah string ho.. jisme ya flight ids ho yaa goBack ho
                 //phr yahii cheeez return karao jahan se method call hua he
                 bookingInfo.add(getStrDate(date));
-                bookingInfo.add(numberOfPessegers);
+                bookingInfo.add(numberOfPassengers);
                 bookingInfo.add(seatType);
                 bookingInfo.add(flight);
 
@@ -666,20 +653,16 @@ public class Driver {
         while (true){
             System.out.print("Date format should be DD-MM-YYYY\n" +
                     "Enter Date: ");
-            String date = input.nextLine();
+            String dateStr = input.nextLine();
             String dateRegex = "^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
             Pattern datePattern = Pattern.compile(dateRegex);
-            Matcher dateMatcher = datePattern.matcher(date);
-            System.out.println("date matches: " + dateMatcher.matches());
+            Matcher dateMatcher = datePattern.matcher(dateStr);
             if(dateMatcher.matches()){
-                Date dateIn = new SimpleDateFormat("dd-MM-yyyy").parse(date);
+                Date dateIn = new SimpleDateFormat("dd-MM-yyyy").parse(dateStr);
                 try {
-                    System.out.println(dateIn.compareTo(new Date()));
-                    System.out.println(new Date());
-                    System.out.println(dateIn);
                     if(dateIn.compareTo(new Date())<0) throw new InvalidDateException("The date you entered is already past");
                     if(datePlus30.compareTo(dateIn)<0) throw new InvalidDateException("Sorry, The system takes bookings within 30 days only! ");
-                    return date;
+                    return getStrDate(dateIn);
                 } catch (InvalidDateException e) {
                     System.out.println(e.getMessage());
                 }
@@ -689,5 +672,117 @@ public class Driver {
         }
     }
 
+    private static String inputUsername() throws SQLException{
+        while(true) {
+            try {
+                System.out.print("username: ");
+                String username = input.next();
+                Pattern usernamePattern= Pattern.compile("^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$");
+                Matcher matcher = usernamePattern.matcher(username);
+                if(!matcher.matches()) throw new UsernameException("Please enter a valid username.");
+                if (!airline.isUsernameAvailable(username)) throw new UsernameException("Username not Available! Please re-enter a different one");
+                return username;
+            }catch (UsernameException ue){
+                System.out.println(ue.getMessage());
+            }
+        }
+    }
+
+    private static String inputPassword(){
+
+        while (true){
+            System.out.println("password: ");
+            String password =input.nextLine();
+            Pattern usernamePattern= Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$");
+            Matcher matcher = usernamePattern.matcher(password);
+            if(matcher.matches()) return password;
+            else{
+                System.out.println("""
+                   
+                   ********  Password guidelines  ********
+                   Password must be at least 8 characters, no more than 20 characters
+                   and must include at least one upper case letter, one lower case letter, and one numeric digit
+                   
+                    """);
+            }
+        }
+    }
+    private static String inputAddress(){
+        Pattern addressPattern = Pattern.compile("\\w+(\\s\\w+){2,}");
+        while (true){
+            System.out.print("address: ");
+            String address = input.nextLine();
+            if(address.length()<5){
+                System.out.println("Invalid address! Enter a valid one. ");
+                continue;
+            }
+            return address;
+        }
+    }
+
+    private static String inputGender(){
+        while (true){
+            try{
+                System.out.print("Gender:\n" +
+                        "1. Male\n" +
+                        "2. Female\n" +
+                        "Choice: ");
+                int choice = input.nextInt();
+                if (choice<1 || choice>2) throw  new InputOutOfBound();
+                if(choice==1) return "M";
+                else return "F";
+            }catch (InputMismatchException ime){
+                System.out.println("Select between Integers Only");
+                input.nextLine();
+            }catch (InputOutOfBound iob){
+                System.out.println(" Please select either 1 or 2");
+            }
+        }
+
+    }
+
+    private static void signUp(){
+        try {
+            System.out.print("Full Name: ");
+            String name=inputName();
+            String username =inputUsername();
+            String password =inputPassword();
+            String cnic = inputCnic();
+            String phone = inputPhone();
+            String address = inputAddress();
+            String gender = inputGender();
+//            String dob =
+
+        }catch (Exception ex){
+            System.out.println(ex.getMessage());
+        }
+    }
+    private static String inputDob() throws ParseException {
+        String dateRegex = "^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
+        Pattern datePattern = Pattern.compile(dateRegex);
+        Calendar cal = Calendar.getInstance();
+//        cal.setTime();
+//        cal.add(Calendar.YEAR,-18);
+        Date dateMinus18years = cal.getTime();
+        while (true){
+            try {
+                System.out.print("Date format should be DD-MM-YYYY\n" +
+                        "Date of Birth: ");
+                String dob =input.nextLine();
+                Matcher matcher = datePattern.matcher(dob);
+                if(matcher.matches()) throw  new InvalidDateException();
+                Date date = new SimpleDateFormat("dd-MM-yyyy").parse(dob);
+                // date.compareTo(dateMinus18years)
+                // adding 18 years to the dob..
+                //if date gets greater than today throw error
+
+                break;
+            }catch (InvalidDateException ide){
+                System.out.println("Please enter a valid date!");
+            }
+
+        }
+        return null;
+    }
 }
 

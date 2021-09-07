@@ -13,24 +13,79 @@ public class testInput {
 
 
     public static void main(String[] args) throws ParseException {
+
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 1988);
-        cal.set(Calendar.MONTH, Calendar.JANUARY);
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        Date dateRepresentation = cal.getTime();
-        System.out.println(dateRepresentation);
-        Calendar c= Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.DATE,27);
-        System.out.println(c);
-        int d = c.get(Calendar.DATE);
-        System.out.println(d);
-        Date datenow = new Date();
-        System.out.println(datenow);
-        String strdate = "2021-05-14";
-        Date dateObj = new SimpleDateFormat("yyyy-MM-dd").parse(strdate);
-        System.out.println(dateObj);
-        System.out.println(datenow.compareTo(dateObj));
+        cal.add(Calendar.YEAR,-30);
+        Date datePlus30 = cal.getTime();
+        System.out.println(datePlus30);
+        Pattern addressPattern = Pattern.compile("\\w+(\\s\\w+){2,}");
+        while (true){
+            System.out.print("enter address");
+            String address = input.nextLine();
+            Matcher matcher = addressPattern.matcher(address);
+            System.out.println(matcher.matches());
+
+            if(1==2) break;
+        }
+        System.out.println("""
+                   
+                   ********  Password guidelines  ********
+                   Password must be at least 8 characters, no more than 20 characters
+                   and must include at least one upper case letter, one lower case letter, and one numeric digit
+                   
+                    """);
+        while (true) {
+
+/*Password matching expression. Password must be at least 4 characters, no more than 8 characters,
+and must include at least one upper case letter, one lower case letter, and one numeric digit*/
+
+         break;
+        }
+
+        System.out.print(
+                """
+                        1. Add a route
+                        2. Cancel a route
+                        3. Cancel a flight
+                        4. Cancel Booking
+                        5. Log out
+                        6. Exit
+                        Please choose any of the above:\s"""
+        );
+        System.out.print(
+                """
+                        1. See Flights
+                        2. View Notifications
+                        3. View Bookings
+                        4. Cancel Booking
+                        5. View History
+                        6. Log out
+                        7. Exit
+                        Please choose any of the above:\s"""
+        );
+
+        {
+            System.out.println("hello");
+            System.out.println("hello");
+        }
+//        Calendar cal = Calendar.getInstance();
+//        cal.set(Calendar.YEAR, 1988);
+//        cal.set(Calendar.MONTH, Calendar.JANUARY);
+//        cal.set(Calendar.DAY_OF_MONTH, 1);
+//        Date dateRepresentation = cal.getTime();
+//        System.out.println(dateRepresentation);
+//        Calendar c= Calendar.getInstance();
+//        c.setTime(new Date());
+//        c.add(Calendar.DATE,27);
+//        System.out.println(c);
+//        int d = c.get(Calendar.DATE);
+//        System.out.println(d);
+//        Date datenow = new Date();
+//        System.out.println(datenow);
+//        String strdate = "2021-05-14";
+//        Date dateObj = new SimpleDateFormat("yyyy-MM-dd").parse(strdate);
+//        System.out.println(dateObj);
+//        System.out.println(datenow.compareTo(dateObj));
 
 
         String date111 = "2021-08-09 01:26:30";
@@ -172,20 +227,16 @@ public class testInput {
             try {
                 System.out.print("cnic should be separated by \"-\"\nCNIC Number: ");
                 cnic = input.next();
-                //4XXXX-XXXXXXX-X
-//                String cnicPatternStructure = "4[0-9]{4}-[0-9]{7}-[0-9]";
-//                String cnicPatternStructure = "^4\\d{4}-\\d{7}-\\d{1}$";
                 String cnicPatternStructure = "^[1-7][0-9]{4}-\\d{7}-\\d{1}$";
                 Pattern cnicPattern = Pattern.compile(cnicPatternStructure);
                 Matcher cnicPatternMatcher = cnicPattern.matcher(cnic);
                 System.out.println("CNIC MATCHES = "+ cnicPatternMatcher.matches());
                 if (!cnicPatternMatcher.matches()) throw new InputMismatchException();
-                break;
+                return cnic;
             } catch (InputMismatchException ex) {
                 System.out.println("Please Enter a Valid CNIC number! ");
             }
         }
-        return cnic;
     }
 
     public static void testmethod (int... args){
