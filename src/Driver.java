@@ -191,8 +191,6 @@ public class Driver {
                             //cancel a flight
                             // the admin is supposed to enter a date and to-from , and on that specific date all the bookings of a to-from gets cancelled
                             /* admin should see the flights whose active till column is null
-
-
                             * */
 //                            airline.getFlights();
 
@@ -285,10 +283,12 @@ public class Driver {
                         //Sign up information database me store hojaegi or wohii data user.login ke liye bhi use ki jaegiii
                         //jiska matlab hoga ke sign up hone ke baad wohii account sign in hoga
                         case 3: {
-                                String[] signUpData = collectSignUp();
-                                airline.signUp(signUpData);
+                            System.out.println("Sign Up");
+                            String[] signUpData = collectSignUp();
+                            airline.signUp(signUpData);
+                            System.out.println("Signing up successful.");
                             break;
-                        }
+                        } //complete
                         //End Program
                         case 4: {
                             System.out.println("\n\nBuh Byeee");
@@ -378,83 +378,10 @@ public class Driver {
 
     }
 
-    public static String getStrDate(Date date){
+    private static String getStrDate(Date date){
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String strDate = dateFormat.format(date);  // 2021-12-12
         return strDate;
-    }
-
-    private static String inputName(){
-
-        Pattern pattern = Pattern.compile(new String ("^[a-zA-Z]+[\\-'\\s]?[a-zA-Z ]+$"));
-        String name;
-        while(true){
-            try {
-                System.out.print("Full Name: ");
-                name = input.nextLine();
-                name = input.nextLine();
-                Matcher matcher = pattern.matcher(name);
-                if(!matcher.matches()) throw new InputMismatchException();
-                break;
-
-            }
-            catch (InputMismatchException e){
-                System.out.println("Please enter a valid name!");
-                input.nextLine();
-            }
-        }
-        String capitalized="";
-        boolean convertNext = true;
-        for (char ch : name.toCharArray()) {
-            if (Character.isSpaceChar(ch)) {
-                convertNext = true;
-            } else if (convertNext) {
-                ch = Character.toTitleCase(ch);
-                convertNext = false;
-            } else {
-                ch = Character.toLowerCase(ch);
-            }
-            capitalized+=ch;
-        }
-        return capitalized;
-    }
-
-    private static String inputCnic() {
-        String cnic;
-        while (true) {
-            try {
-                System.out.print("cnic should be separated by \"-\"\nCNIC Number: ");
-                cnic = input.next();
-                //4XXXX-XXXXXXX-X
-//                String cnicPatternStructure = "4[0-9]{4}-[0-9]{7}-[0-9]";
-                String cnicPatternStructure = "^[1-7][0-9]{4}-\\d{7}-\\d{1}$";
-
-                Pattern cnicPattern = Pattern.compile(cnicPatternStructure);
-                Matcher cnicPatternMatcher = cnicPattern.matcher(cnic);
-                if (!cnicPatternMatcher.matches()) throw new InputMismatchException();
-                break;
-            } catch (InputMismatchException ex) {
-                System.out.println("Please Enter a Valid CNIC number! ");
-            }
-        }
-        return cnic;
-    }
-
-    private static String inputPhone() {
-        String phone;
-        while (true) {
-            try {
-                phone = input.next();
-                String phonePatternStructure = "[\\d]{6,16}";
-                Pattern cnicPattern = Pattern.compile(phonePatternStructure);
-                Matcher cnicPatternMatcher = cnicPattern.matcher(phone);
-                if (!cnicPatternMatcher.matches()) throw new InputMismatchException();
-                break;
-            } catch (InputMismatchException ex) {
-                System.out.print("Please Enter a Valid CNIC number! ");
-            }
-        }
-        return phone;
     }
 
     private static String showFlights(ResultSet resultSet) throws SQLException {
@@ -506,7 +433,6 @@ public class Driver {
 
                 System.out.print("Enter Date of Departure (Date format: yyyy-MM-dd): ");
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(input.next());
-                System.out.println(date);
                 ArrayList<String> froms = airline.getFroms();
                 String from = inputFrom(froms);
 
@@ -519,7 +445,7 @@ public class Driver {
                         "B for Business\n" +
                         "E for Economy\n" +
                         "Your Choice: ");
-                char seatType = input.next().charAt(0);
+                char seatType = input.next().toUpperCase(Locale.ROOT).charAt(0);
 
                 if (!(seatType == 'B' || seatType == 'E')) throw new InputMismatchException("Please choose between B and E");
                 ResultSet resultSet = airline.getFlights(date,destination,from,numberOfPassengers,seatType);
@@ -554,6 +480,7 @@ public class Driver {
         for(int i=0;i<numberOfPassengers;i++){
             String[] passenger = new String[2];
             System.out.println("Information for passenger "+(i+1));
+            input.nextLine();
             passenger[0] = inputName();
             passenger[1] = inputCnic();
             passengers.add(passenger);
@@ -612,6 +539,75 @@ public class Driver {
         return destinations.get(choice-1);
     }
 
+    private static String inputName(){
+
+        Pattern pattern = Pattern.compile(new String ("^[a-zA-Z]+[\\-'\\s]?[a-zA-Z ]+$"));
+        String name;
+        while(true){
+            try {
+                System.out.print("Full Name: ");
+                name = input.nextLine();
+                Matcher matcher = pattern.matcher(name);
+                if(!matcher.matches()) throw new InputMismatchException();
+                break;
+
+            }
+            catch (InputMismatchException e){
+                System.out.println("Please enter a valid name!");
+                input.nextLine();
+            }
+        }
+        String capitalized="";
+        boolean convertNext = true;
+        for (char ch : name.toCharArray()) {
+            if (Character.isSpaceChar(ch)) {
+                convertNext = true;
+            } else if (convertNext) {
+                ch = Character.toTitleCase(ch);
+                convertNext = false;
+            } else {
+                ch = Character.toLowerCase(ch);
+            }
+            capitalized+=ch;
+        }
+        return capitalized;
+    }
+
+    private static String inputCnic() {
+        String cnic;
+        while (true) {
+            try {
+                System.out.print("cnic should be separated by \"-\"\nCNIC Number: ");
+                cnic = input.nextLine();
+                String cnicPatternStructure = "^[1-7][0-9]{4}-\\d{7}-\\d{1}$";
+                Pattern cnicPattern = Pattern.compile(cnicPatternStructure);
+                Matcher cnicPatternMatcher = cnicPattern.matcher(cnic);
+                if (!cnicPatternMatcher.matches()) throw new InvalidInput("Please Enter a Valid CNIC number! ");
+                return cnic;
+            } catch (InvalidInput ex) {
+                System.out.println(ex.getMessage());
+                input.nextLine();
+            }
+        }
+    }
+
+    private static String inputPhone() {
+        String phone;
+        while (true) {
+            try {
+                System.out.print("Phone: ");
+                phone = input.next();
+                String phonePatternStructure = "[\\d]{6,16}";
+                Pattern cnicPattern = Pattern.compile(phonePatternStructure);
+                Matcher cnicPatternMatcher = cnicPattern.matcher(phone);
+                if (!cnicPatternMatcher.matches()) throw new InputMismatchException();
+                return phone;
+            } catch (InputMismatchException ex) {
+                System.out.print("Please Enter a valid phone number! ");
+            }
+        }
+    }
+
     public static String inputTime(){
 //        (([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])
         String pattern = "(([0-1][0-9])|([2][0-3])):([0-5][0-9]):([0-5][0-9])";
@@ -666,7 +662,7 @@ public class Driver {
                 Pattern usernamePattern= Pattern.compile("^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$");
                 Matcher matcher = usernamePattern.matcher(username);
                 if(!matcher.matches()) throw new UsernameException("Please enter a valid username.");
-                if (!airline.isUsernameAvailable(username)) throw new UsernameException("Username not Available! Please re-enter a different one");
+                if (airline.usernameAlreadyExists(username)) throw new UsernameException("Username not available! Please re-enter a different one");
                 return username;
             }catch (UsernameException ue){
                 System.out.println(ue.getMessage());
@@ -677,7 +673,7 @@ public class Driver {
     private static String inputPassword(){
 
         while (true){
-            System.out.println("password: ");
+            System.out.print("password: ");
             String password =input.nextLine();
             Pattern usernamePattern= Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$");
             Matcher matcher = usernamePattern.matcher(password);
@@ -750,17 +746,38 @@ public class Driver {
         }
     }
 
+    private static String inputEmail(){
+//        Pattern emailPattern = Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$");
+        while(true){
+            try{
+                System.out.print("email: ");
+                String email = input.nextLine();
+//                Matcher matcher = emailPattern.matcher(email);
+//                if(!matcher.matches()) throw new Exception("Email not valid, re-enter a valid one!");
+                return email;
+            }
+            catch (Exception ex){
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+
+
     private static String[] collectSignUp(){
         String[] signUpData = new String[9];
         try {
+            input.nextLine();
             signUpData[0] = inputName();
             signUpData[1] = inputUsername();
+            input.nextLine();
             signUpData[2] = inputPassword();
             signUpData[3] = inputCnic();
             signUpData[4] = inputPhone();
+            input.nextLine();
             signUpData[5] = inputAddress();
             signUpData[6] = inputGender();
             signUpData[7] = inputDob();
+            input.nextLine();
             signUpData[8] = inputEmail();
 
         }catch (Exception ex){
@@ -770,20 +787,5 @@ public class Driver {
         return signUpData;
     }
 
-    private static String inputEmail(){
-        Pattern emailPattern = Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$");
-        while(true){
-            try{
-                System.out.print("email: ");
-                String email = input.nextLine();
-                Matcher matcher = emailPattern.matcher(email);
-                if(!matcher.matches()) throw new Exception("Email not valid, re-enter a valid one!");
-                return email;
-            }
-            catch (Exception ex){
-                System.out.println(ex.getMessage());
-            }
-        }
-    }
 }
 

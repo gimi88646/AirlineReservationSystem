@@ -20,7 +20,7 @@ public class Airline {
           user.setConnection(connection,statement);
 
           //DATABASE TABLES creation
-          {
+          if(1==2){
                String createFlightsTableSql="CREATE TABLE Flight (" +
                        "flightId INTEGER," +
                        "travelTo TEXT," +
@@ -122,7 +122,7 @@ public class Airline {
      }
 
      void signUp(String[] userInfo) throws  SQLException{
-          StringBuilder insertInfoSql = new StringBuilder("INSERT INTO Users(fullName,username,password,cnic,contact,address,gender) VALUES('");
+          StringBuilder insertInfoSql = new StringBuilder("INSERT INTO Users(fullName,username,password,cnic,contact,address,gender,dateOfBirth,email,whenAccountCreated,userType) VALUES('");
           for(int i=0;i<userInfo.length-1;i++){
                insertInfoSql.append(userInfo[i]).append("','");
           }
@@ -180,7 +180,6 @@ public class Airline {
           return  statement.getResultSet();
           //case: no flights exist? if count inside while loop doesn't get incremented return null.. then handle it in driver
      }
-
      ResultSet getFlights(String from,String to) throws SQLException{
           //this method gets called by admin for route cancellation
 
@@ -222,13 +221,14 @@ public class Airline {
           }
           return destinations;
      }
-     boolean isUsernameAvailable(String username) throws SQLException{
+     boolean usernameAlreadyExists(String username) throws SQLException{
           /**
            * method returns true if username is not present in the database table
            */
-          statement.execute("SELECT username FROM Users WHERE username='"+username+"');");
+          statement.execute("SELECT username FROM Users WHERE username='"+username+"';");
           ResultSet resultSet = statement.getResultSet();
-          return !resultSet.next();
+
+          return resultSet.next();
      }
 }
 

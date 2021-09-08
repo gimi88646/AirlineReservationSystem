@@ -5,7 +5,7 @@ import java.util.Date;
 public class User extends Person {
 
 //    ArrayList<String[]> notifications = new ArrayList();
-    private ArrayList<String[]> notifications = new ArrayList();
+    private ArrayList<String[]> notifications;
 
 
     // this attribute will be useful in Airline class because we will be able to check if user is a member
@@ -96,19 +96,22 @@ public class User extends Person {
     }
 
     private void populateNotifications() throws SQLException{
-        String query = "SELECT notification,whenNotified FROM notifications WHERE username=" + "'"+username+"' ORDER BY whenNotified LIMIT 5;";
+        notifications = new ArrayList();
+        String query = "SELECT notification,whenNotified FROM notifications WHERE username=" + "'"+username+"' ORDER BY whenNotified LIMIT 10;";
         statement.execute(query);
         ResultSet rset = statement.getResultSet();
-        Boolean noticationsPresent=false;
+        Boolean notificationsPresent=false;
             while(rset.next()){
-                noticationsPresent=true;
+                notificationsPresent=true;
                 String [] notification = new String[2];
                 notification[0] = rset.getString("notification");
                 notification[1] = rset.getString("whenNotified");
                 notifications.add(notification);
             }
-            if(!noticationsPresent) notifications = null;
+            if(!notificationsPresent) notifications = null;
+            //repopulate is liye nahii ho rha ke last sign in par wo
     }
+
     ArrayList<String[]> getNotifications() throws SQLException{
         populateNotifications();
         return notifications;
