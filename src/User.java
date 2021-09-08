@@ -11,9 +11,7 @@ public class User extends Person {
     // this attribute will be useful in Airline class because we will be able to check if user is a member
     // if is a member the program will provide the user extra functionality
     // extra functionality  = history , view bookings, cancel bookings.
-
-//    private boolean isSignedIn = false;
-
+    //    private boolean isSignedIn = false;
     //the user object is created when the program starts with default values (Anonymous)
     //if user wants to sign in. login method gets called
     User(){
@@ -94,7 +92,6 @@ public class User extends Person {
                 "ORDER BY bookedForDate");
         return statement.getResultSet();
     }
-
     private void populateNotifications() throws SQLException{
         notifications = new ArrayList();
         String query = "SELECT notification,whenNotified FROM notifications WHERE username=" + "'"+username+"' ORDER BY whenNotified LIMIT 10;";

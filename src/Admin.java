@@ -16,16 +16,14 @@ public class Admin extends Person {
     //this method takes to-from time.. number of passengers for a carrier as parameters
 
     public void addRoute(ArrayList<String> flightinfo) throws Exception {
-
         String query = "'" + flightinfo.get(0) + "'";
-
         for (int i = 1; i <= flightinfo.size() - 1; i++) {
             String infopiece = "," + "'" + flightinfo.get(i) + "'";
             query += infopiece;
-
         }
+
         statement.execute(
-                "INSERT INTO Flights(flightId,travelTo,travelFrom,numberOfBcatSeats,numberOfEcatSeats,takeOffTime) VALUES("
+                "INSERT INTO Flights(flightId,travelTo,travelFrom,numberOfBcatSeats,numberOfEcatSeats,takeOffTime,priceE,priceB) VALUES("
                         + query + ")");
     }
 

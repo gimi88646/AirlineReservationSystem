@@ -54,17 +54,37 @@ public class Driver {
                             if(response.equals("notFound") ){
                                 System.out.println("Sorry no Flights Available, Please choose another date. ");
                             }else if ( response.equals("goBack")){}
-
-                            // else is the case when flightId is returned as response..
                             else  {
                                 //start taking information.. iske liye method likhna chahiye kyuu user logedin me bhi yahii kam ho rha hoga
                                 //static take info method should be implemented... which returns Arraylist of string[] each string array represents a passenger
                                 ArrayList<String[]> passengers = takeInfoForPassengers((int)bookingInfo.get(1));
                                 if(passengers!=null){
-                                    airline.user.book(passengers,bookingInfo);
-                                    System.out.println("Booked Successfully! ");
+                                    while(true){
+                                        try{
+                                            System.out.println("\nCalculated Bill PKR: " + bookingInfo.get(bookingInfo.size()-1) + "\n");
+                                            System.out.print("Confirm Booking?\n1. Yes\n2. No\nYour Choice: ");
+                                            int cchoice = input.nextInt();
+                                            if(cchoice != 1 || cchoice !=2) throw new InputOutOfBound("Please input from given choices");
+                                            if(cchoice == 1){
+                                                airline.user.book(passengers,bookingInfo);
+                                                System.out.println("Booked Successfully! ");
+                                            }
+                                            break;
+                                        }
+                                        catch(InputOutOfBound eob){
+                                            System.out.println(eob.getMessage());
+
+                                        }
+                                        catch(InputMismatchException emm){
+                                            System.out.println("Please choose between 1 OR 2");
+                                            input.nextLine();
+                                        }
+
+                                    }
+
                                 }
                             }
+
                             break;
                         }
                         case 2:{
@@ -131,6 +151,7 @@ public class Driver {
 
                     switch (choice) {
                         case 1: {
+
                             // the admin is supposed to enter a new flight and information relevant to the fight..
                             // and that information is inserted into the flights table in database
                             System.out.print("Enter Flight ID: ");
@@ -145,6 +166,12 @@ public class Driver {
                             System.out.print("Enter Number of Economy Seats: ");
                             String eseats = input.nextLine();
                             String time = inputTime();
+                            System.out.println("Enter Price for Economy: ");
+                            String priceE = input.nextLine();
+                            System.out.println("Enter Price for Business: ");
+                            String priceB = input.nextLine();
+
+
                             ArrayList<String> flightinfo = new ArrayList<String>();
                             flightinfo.add(fid);
                             flightinfo.add(trvto);
@@ -152,12 +179,13 @@ public class Driver {
                             flightinfo.add(bseats);
                             flightinfo.add(eseats);
                             flightinfo.add(time);
+                            flightinfo.add(priceE);
+                            flightinfo.add(priceB);
                             try {
                                 airline.admin.addRoute(flightinfo);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-
                             break;
 
                         }
@@ -245,9 +273,7 @@ public class Driver {
 
                         // all the flight operations gets displayed
                         case 1: {
-
                             ArrayList bookingInfo = new ArrayList();
-
                             String flight = seeFlights(bookingInfo);
                             if(flight.equals("goBack")){
                                 break;
@@ -259,18 +285,36 @@ public class Driver {
                                 //start taking information.. iske liye method likhna chahiye kyuu user logedin me bhi yahii kam ho rha hoga
                                 //static take info method should be implemented... which returns Arraylist of string[] each string array represents a passenger
                                 ArrayList<String[]> passengers = takeInfoForPassengers((int)bookingInfo.get(1));
-                                if(passengers==null){
-                                    break;
-                                }else {
-                                    airline.user.book(passengers,bookingInfo);
-                                    System.out.println("Booked Successfully! ");
+                                if(passengers!=null){
+                                    while(true){
+                                        try{
+                                            System.out.println("\nCalculated Bill PKR: " + bookingInfo.get(bookingInfo.size()-1) + "\n");
+                                            System.out.print("Confirm Booking?\n1. Yes\n2. No\nYour Choice: ");
+                                            int cchoice = input.nextInt();
+                                            if(cchoice != 1 || cchoice !=2) throw new InputOutOfBound("Please input from given choices");
+                                            if(cchoice == 1){
+                                                airline.user.book(passengers,bookingInfo);
+                                                System.out.println("Booked Successfully! ");
+                                            }
+                                            break;
+                                        }
+                                        catch(InputOutOfBound eob){
+                                            System.out.println(eob.getMessage());
+
+                                        }
+                                        catch(InputMismatchException emm){
+                                            System.out.println("Please choose between 1 OR 2");
+                                            input.nextLine();
+                                        }
+
+                                    }
+
                                 }
                             }
-                            //book ka method from user class
                             break;
                         }
 
-                        //login module
+
                         case 2: {
                             System.out.print("Username: ");
                             String username = input.next();
@@ -279,9 +323,7 @@ public class Driver {
                             airline.login(username, password);
                             break;
                         }
-                        //sign up module
-                        //Sign up information database me store hojaegi or wohii data user.login ke liye bhi use ki jaegiii
-                        //jiska matlab hoga ke sign up hone ke baad wohii account sign in hoga
+
                         case 3: {
                             System.out.println("Sign Up");
                             String[] signUpData = collectSignUp();
@@ -289,6 +331,7 @@ public class Driver {
                             System.out.println("Signing up successful.");
                             break;
                         } //complete
+
                         //End Program
                         case 4: {
                             System.out.println("\n\nBuh Byeee");
@@ -307,7 +350,6 @@ public class Driver {
             }
         } while (true);
     }
-
 
     public static String displayBookings(ResultSet resultSet,boolean wantsToCancelBooking) throws SQLException{
         // this method can print bookings that are history, as well as bookings that are not yet past
@@ -761,7 +803,6 @@ public class Driver {
             }
         }
     }
-
 
     private static String[] collectSignUp(){
         String[] signUpData = new String[9];
